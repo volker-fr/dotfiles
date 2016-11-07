@@ -1,0 +1,11 @@
+# Allow multiple connections through one tunnel
+ControlMaster auto
+ControlPath ~/.ssh/sessions/%r@%h:%p
+ControlPersist 4h
+
+# client heartbeats every 60 sec
+ServerAliveInterval 60
+
+# ServerAliveInterval *
+#ServerAliveCountMax seconds till connection is dropped
+ServerAliveCountMax 10

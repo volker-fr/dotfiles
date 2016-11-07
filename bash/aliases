@@ -1,0 +1,2 @@
+alias vimwiki='vim -c "VimwikiIndex"'
+alias diary='vim -c "call vimwiki#diary#make_note(v:count1)"'

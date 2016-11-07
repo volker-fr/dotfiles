@@ -1,0 +1,25 @@
+#!/bin/bash
+encfs.pwd.sh() {
+	encfs $(pwd)/encrypted $(pwd)/decrypted
+}
+
+# leo
+leo() {
+    lang=en
+    IFS=+
+    Q="${*// /%20}"
+     w3m -dump "https://dict.leo.org/${lang}de/?search=${Q//+/%20}" \
+        | grep -EA 900 'Aktivieren Sie Javascript' \
+        | grep -EB 900 'Weitere Aktionen' \
+        | sed '/Weitere Aktionen/d' \
+        | tail -n+5 \
+        | less
+}
+
+# generate random passwords
+genpasswd() {
+	local l=$1
+	[ "$l" = "" ] && l=32
+	tr -dc 'A-Za-z0-9!@#$%^&*_()-' < /dev/urandom | head -c ${l} | xargs
+}
+

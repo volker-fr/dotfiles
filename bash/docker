@@ -1,0 +1,154 @@
+#!/bin/bash
+# Bash wrappers for docker run commands
+# Based on https://github.com/jessfraz/dotfiles/blob/master/.dockerfunc
+
+#
+# Helper Functions
+#
+dcleanup(){
+	local containers
+	containers=( $(docker ps -aq 2>/dev/null) )
+	docker rm "${containers[@]}" 2>/dev/null
+	local volumes
+	volumes=( $(docker ps --filter status=exited -q 2>/dev/null) )
+	docker rm -v "${volumes[@]}" 2>/dev/null
+	local images
+	images=( $(docker images --filter dangling=true -q 2>/dev/null) )
+	docker rmi "${images[@]}" 2>/dev/null
+}
+del_stopped(){
+	local name=$1
+	local state
+	state=$(docker inspect --format "{{.State.Running}}" "$name" 2>/dev/null)
+
+	if [[ "$state" == "false" ]]; then
+		docker rm "$name"
+	fi
+}
+relies_on(){
+	for container in "$@"; do
+		local state
+		state=$(docker inspect --format "{{.State.Running}}" "$container" 2>/dev/null)
+
+		if [[ "$state" == "false" ]] || [[ "$state" == "" ]]; then
+			echo "$container is not running, starting it for you."
+			$container
+		fi
+	done
+}
+
+#
+# Container Aliases
+#
+chrome(){
+        del_stopped chrome
+
+	docker run -d \
+		--memory 3gb \
+		-v /etc/localtime:/etc/localtime:ro \
+		-v /tmp/.X11-unix:/tmp/.X11-unix \
+		-e "DISPLAY=unix${DISPLAY}" \
+		-v "${HOME}/Downloads:/root/OutsideOfDocker" \
+		-v "${HOME}/localdata/dotfiles/dot_chrome:/data" \
+		-v /dev/shm:/dev/shm \
+		--device /dev/snd \
+		--device /dev/dri \
+		--device /dev/video0 \
+		--device /dev/bus/usb \
+		--group-add audio \
+		--group-add video \
+		--name chrome \
+		jess/chrome --user-data-dir=/data \
+			"$@"
+}
+curl(){
+        docker run --rm -it \
+                --net host \
+                jess/curl "$@"
+}
+htop(){
+		docker run --rm -it \
+				--pid host \
+				--net none \
+				--name htop \
+				jess/htop
+}
+libreoffice(){
+        del_stopped libreoffice
+
+	if [ -f "$1" ]; then
+		echo "Mapping file $(readlink -f $1)"
+		echo "          to $1"
+		arg="-v $(readlink -f $1):/${1}"
+	else
+		arg=""
+	fi
+
+        docker run -d \
+                -v /etc/localtime:/etc/localtime:ro \
+                -v /tmp/.X11-unix:/tmp/.X11-unix \
+                -e "DISPLAY=unix${DISPLAY}" \
+                -v "${HOME}/Downloads:/root/OutsideOfDocker" \
+		$arg \
+                -e GDK_SCALE \
+                -e GDK_DPI_SCALE \
+                --name libreoffice \
+                jess/libreoffice "$@"
+}
+nmap(){
+        docker run --rm -it \
+                --net host \
+                jess/nmap "$@"
+}
+slack(){
+        del_stopped slack
+
+        docker run -d \
+                -v /etc/localtime:/etc/localtime:ro \
+                -v /tmp/.X11-unix:/tmp/.X11-unix \
+                -e "DISPLAY=unix${DISPLAY}" \
+		--ipc="host" \
+                --device /dev/snd \
+                --device /dev/dri \
+                --device /dev/video0 \
+                --group-add audio \
+                --group-add video \
+                -v "${HOME}/localdata/dotfiles/dot_Slack:/root/.config/Slack" \
+		-v "${HOME}/Downloads:/root/OutsideOfDocker" \
+                --name slack \
+                jess/slack "$@"
+}
+traceroute(){
+        docker run --rm -it \
+                --net host \
+                jess/traceroute "$@"
+}
+whois(){
+        docker run --rm -it \
+                whois "$@"
+}
+vlc(){
+	        del_stopped vlc
+
+	        docker run -d \
+		                -v /etc/localtime:/etc/localtime:ro \
+		                -v /tmp/.X11-unix:/tmp/.X11-unix \
+		                -e "DISPLAY=unix${DISPLAY}" \
+		                -e GDK_SCALE \
+		                -e GDK_DPI_SCALE \
+		                -e QT_DEVICE_PIXEL_RATIO \
+				--device /dev/snd \
+				--device /dev/dri \
+		                --group-add audio \
+		                --group-add video \
+		                -v "${HOME}/localdata/anschauen:/home/vlc/anschauen" \
+		                --device /dev/dri \
+		                --name vlc \
+		                jess/vlc
+}
+
+w3m(){
+        docker run --rm -it \
+                --net host \
+                w3m "$@"
+}

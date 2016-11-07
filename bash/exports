@@ -1,0 +1,2 @@
+export PATH=/usr/local/bin:/usr/local/sbin:${PATH}:/sbin:/usr/sbin
+export PATH=${PATH}:~/repo/dotfiles/bin
