@@ -2,8 +2,9 @@
 all: git-dotfiles localdata-dotfiles
 
 git-dotfiles:
-	@# individual single dotfiles/folders
+	@# individual single dotfiles or folders
 	ln -sfn $(CURDIR)/i3 $(HOME)/.i3
+	ln -sf $(CURDIR)/tmux.conf $(HOME)/.tmux.conf
 	@# bash
 	ln -sfn $(CURDIR)/bash $(HOME)/.bash
 	ln -sf $(CURDIR)/bashrc $(HOME)/.bashrc
