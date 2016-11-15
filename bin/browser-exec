@@ -1,0 +1,11 @@
+#!/bin/bash
+# idea based on https://github.com/jessfraz/dotfiles/blob/master/bin/browser-exec
+
+# In thunderbird you have to change
+# 	network.protocol-handler.app.http;/usr/bin/x-www-browser
+#	network.protocol-handler.app.https;/usr/bin/x-www-browser
+
+echo "Ran $(date)" > /tmp/timestamp
+
+source ~/.bash/docker
+firefox "$@"
