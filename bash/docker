@@ -66,6 +66,36 @@ curl(){
                 --net host \
                 jess/curl "$@"
 }
+firefox(){
+	del_stopped firefox
+			#-v "${HOME}/localdata/dotfiles/dot_firefox:/root/.firefox" \
+
+	# check if firefox container is running
+	firefox_state=$(docker inspect --format "{{.State.Running}}" firefox 2>/dev/null)
+	if [[ "$firefox_state" == "true" ]]; then
+		docker exec -i firefox /usr/bin/firefox "$@" 2>/dev/null
+	else
+		docker -D run -d \
+			--memory 2gb \
+			--net host \
+			--cpuset-cpus 0 \
+			-v /etc/localtime:/etc/localtime:ro \
+			-v /tmp/.X11-unix:/tmp/.X11-unix \
+			-v "${HOME}/Downloads:/root/OutsideOfDocker" \
+			-v "${HOME}/Downloads:/root/Downloads" \
+			-v "${HOME}/localdata/dotfiles/firefox/dot_mozilla:/root/.mozilla" \
+			-v "${HOME}/localdata/dotfiles/firefox/dot_cache/mozilla:/root/.cache/mozilla" \
+			-e "DISPLAY=unix${DISPLAY}" \
+			-e GDK_SCALE \
+			-e GDK_DPI_SCALE \
+			--device /dev/snd \
+			--device /dev/dri \
+			--name firefox \
+			jess/firefox "$@"
+	fi
+
+
+}
 htop(){
 		docker run --rm -it \
 				--pid host \
@@ -79,9 +109,12 @@ libreoffice(){
 	if [ -f "$1" ]; then
 		echo "Mapping file $(readlink -f $1)"
 		echo "          to $1"
-		arg="-v $(readlink -f $1):/${1}"
+		# for i3 d3menu hack execution...
+		arg1="-v"
+		arg2="$(readlink -f $1):/${1}"
 	else
-		arg=""
+		arg1=""
+		arg2=""
 	fi
 
         docker run -d \
@@ -89,7 +122,7 @@ libreoffice(){
                 -v /tmp/.X11-unix:/tmp/.X11-unix \
                 -e "DISPLAY=unix${DISPLAY}" \
                 -v "${HOME}/Downloads:/root/OutsideOfDocker" \
-		$arg \
+                $arg1 "$arg2" \
                 -e GDK_SCALE \
                 -e GDK_DPI_SCALE \
                 --name libreoffice \
