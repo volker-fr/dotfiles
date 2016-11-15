@@ -122,5 +122,7 @@ source ~/.bash/aliases
 source ~/.bash/docker
 source ~/.bash/functions
 source ~/.bash/exports
+source ~/.bash/prompt
+source ~/.bash/mark-and-jump
 [ -f ~/localdata/dotfiles/dot_bashrc.local ] && \
 	source  ~/localdata/dotfiles/dot_bashrc.local
