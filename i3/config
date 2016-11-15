@@ -32,9 +32,8 @@ floating_modifier $mod
 # lock screen
 bindsym $default+l exec i3lock -c 000000 -f
 # applications
-bindsym $default+f exec firefox
 bindsym $default+t exec thunderbird
-bindsym $default+Return exec i3-sensible-terminal
+bindsym $default+Return exec rxvt
 
 # kill focused window
 bindsym $mod+Shift+q kill
