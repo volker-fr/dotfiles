@@ -1,4 +1,4 @@
-#!/bin/sh -e -x
+#!/bin/sh -e
 ubuntu() {
     sudo apt install -y encfs
     sudo apt install -y iotop vim git redshift-gtk tmux keepass2
@@ -24,6 +24,7 @@ ubuntu() {
     sudo apt install -y mplayer
     sudo apt install -y openssh-server
     sudo apt install -y duplicity python-boto
+    sudo apt install -y libsource-highlight-common
 
     cd /tmp
     wget https://releases.hashicorp.com/vagrant/1.8.7/vagrant_1.8.7_x86_64.deb
@@ -35,7 +36,33 @@ ubuntu() {
 }
 
 macos() {
-    ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    if [ ! -f '/usr/local/bin/brew' ]; then
+        ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    fi
+
+    brew install wget
+    brew install tmux
+    brew install coreutils
+    brew install mplayer
+    brew install source-highlight
+
+    brew install Caskroom/cask/iterm2
+    brew install Caskroom/cask/docker
+    brew install Caskroom/cask/firefox
+    brew install Caskroom/cask/thunderbird
+    brew install Caskroom/cask/flux
+    brew install Caskroom/cask/owncloud
+    brew install Caskroom/cask/hipchat
+    brew install Caskroom/cask/slack
+    brew install Caskroom/cask/menubar-countdown
+    brew install Caskroom/cask/google-chrome
+    brew install Caskroom/cask/libreoffice
+    brew install Caskroom/cask/flash-npapi
+    brew install Caskroom/cask/skype
+    brew install Caskroom/cask/joinme
+    brew install Caskroom/cask/amazon-workspaces
+    brew install Caskroom/cask/virtualbox Caskroom/cask/virtualbox-extension-pack
+    brew install Caskroom/cask/vagrant
 }
 
 usage() {
@@ -49,6 +76,8 @@ main() {
        usage
        exit 1
     fi
+
+    set -x
 
     case "$1" in
         ubuntu)
