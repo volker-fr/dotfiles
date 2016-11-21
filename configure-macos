@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# partially based on ~/.macos — https://mths.be/macos
+
+# reverse scrollpad scrolling
+defaults write -g com.apple.swipescrolldirection -bool false
+
+# size of dock
+defaults write com.apple.Dock tilesize -int 30 && killall -9 Dock
+
+# Disable transparency in the menu bar etc.
+defaults write com.apple.universalaccess reduceTransparency -bool true
+
+# Manual:
+# iterm => profile => color => choose solarized-dark
+# preferences => display => scaled => higher resolution
+# preferences => security & privacy => general => require password "Immediately"
+# preferences => security & privacy => firewall => turn on
+# preferences => date & time => show date + show day of week
+# preferences => bluetooth => show BT in menu bar
+# preferences => batter => show percentage
