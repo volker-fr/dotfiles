@@ -1,2 +1,12 @@
 export PATH=/usr/local/bin:/usr/local/sbin:${PATH}:/sbin:/usr/sbin
 export PATH=${PATH}:~/repo/dotfiles/bin
+
+# colored less
+if [ -e '/usr/share/source-highlight/src-hilite-lesspipe.sh' ]; then
+        export LESSOPEN="| /usr/share/source-highlight/src-hilite-lesspipe.sh %s"
+
+elif [ -e '/usr/local/bin/src-hilite-lesspipe.sh' ];then
+        export LESSOPEN="| /usr/bin/src-hilite-lesspipe.sh %s"
+fi
+
+export LESS="-R"
