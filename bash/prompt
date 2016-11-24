@@ -1,11 +1,11 @@
 #!/bin/bash
 if infocmp xterm-256color >/dev/null 2>&1; then
-	export TERM='xterm-256color'
+    export TERM='xterm-256color'
 fi
 
 # user@hostname
 if [[ -n "$SSH_CLIENT" ]]; then
-    PROMPT_USER_HOST="${PROMPT_USER}@%m:"
+    PROMPT_USER_HOST="${USER}@\h:"
 else
     PROMPT_USER_HOST=""
 fi
