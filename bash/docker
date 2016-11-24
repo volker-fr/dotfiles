@@ -68,7 +68,6 @@ curl(){
 }
 firefox(){
 	del_stopped firefox
-			#-v "${HOME}/localdata/dotfiles/dot_firefox:/root/.firefox" \
 
 	# check if firefox container is running
 	firefox_state=$(docker inspect --format "{{.State.Running}}" firefox 2>/dev/null)
@@ -133,6 +132,24 @@ nmap(){
                 --net host \
                 jess/nmap "$@"
 }
+plex(){
+        del_stopped plex
+
+        docker run -d \
+            --name=plex \
+            --net=host \
+            -e VERSION=latest \
+            -e PUID=$(id -u $USER) \
+            -e PGID=$(id -g $USER) \
+            -e TZ="$(cat /etc/timezone)" \
+            -v ${HOME}/localdata/dotfiles/plex/config:/config \
+            -v ${HOME}/localdata/anschauen/tvshows:/data/tvshows:ro \
+            -v ${HOME}/localdata/anschauen:/data/movies:ro \
+            -v ${HOME}/localdata/dotfiles/plex/transcode:/transcode \
+            linuxserver/plex
+
+    echo $(ip route get 1 | awk '{print $NF;exit}'):32400/web
+}
 slack(){
         del_stopped slack
 
@@ -179,7 +196,17 @@ vlc(){
 		                --name vlc \
 		                jess/vlc
 }
+x11vnc(){
+    export DISPLAY=:0
+    xhost +SI:localuser:root
 
+    docker run --rm -it \
+        -p 5900:5900 \
+        -v /tmp/.X11-unix:/tmp/.X11-unix \
+        -v /etc/localtime:/etc/localtime:ro \
+        --ipc=host \
+        x11vnc "$@"
+}
 w3m(){
         docker run --rm -it \
                 --net host \
