@@ -61,8 +61,10 @@ macos() {
     brew install Caskroom/cask/skype
     brew install Caskroom/cask/joinme
     brew install Caskroom/cask/amazon-workspaces
+    brew install Caskroom/cask/tigervnc-viewer
     brew install Caskroom/cask/virtualbox Caskroom/cask/virtualbox-extension-pack
     brew install Caskroom/cask/vagrant
+    brew install Caskroom/cask/tunnelblick
 }
 
 usage() {
