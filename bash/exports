@@ -6,7 +6,7 @@ if [ -e '/usr/share/source-highlight/src-hilite-lesspipe.sh' ]; then
         export LESSOPEN="| /usr/share/source-highlight/src-hilite-lesspipe.sh %s"
 
 elif [ -e '/usr/local/bin/src-hilite-lesspipe.sh' ];then
-        export LESSOPEN="| /usr/bin/src-hilite-lesspipe.sh %s"
+        export LESSOPEN="| /usr/local/bin/src-hilite-lesspipe.sh %s"
 fi
 
 export LESS="-R"
