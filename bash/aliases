@@ -1,6 +1,8 @@
 alias diary='vim -c "call vimwiki#diary#make_note(v:count1)"'
-alias ps='ps -H'
 alias vimwiki='vim -c "VimwikiIndex"'
 alias cp="cp -i"
 alias mv="mv -i"
 alias rm="rm -i"
+if [ "$(uname)" != 'Darwin' ]; then
+    alias ps='ps -H'
+fi
