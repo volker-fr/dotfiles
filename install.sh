@@ -58,6 +58,7 @@ macos() {
     brew install wget
     brew install tmux
     brew install coreutils
+    brew install findutils
     brew install mplayer
     brew install source-highlight
 
