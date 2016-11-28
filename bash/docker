@@ -66,6 +66,15 @@ curl(){
                 --net host \
                 jess/curl "$@"
 }
+exiftool(){
+        #git clone git@github.com:Miljar/exiftool-docker.git && cd exiftool-docker && docker build -t exiftool .
+        if [ -n "$1" ]; then
+                docker run -v "$PWD":/tmp exiftool $@
+        else
+                echo "$0 <args> <filename>"
+        fi
+        docker run -v "$PWD":/tmp exiftool $@
+}
 firefox(){
 	del_stopped firefox
 
