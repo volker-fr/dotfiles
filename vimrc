@@ -17,12 +17,35 @@ set undodir=$HOME/.cache/vim/ " where to store the undofile
 
 set expandtab " tab becomes whitespace
 
+set hlsearch " highlight the word we search for
+set incsearch " start searching & hilightning before return is pressed
+
+"
+" Status line
+"
+set laststatus=2 " status bar. show 2=always, 1=only when more as one window
+set statusline=
+set statusline+=[%n] " vim buffer number
+set statusline+=[%<%F] " filename full path
+set statusline+=%h%w%m%r " Help, preview window, modified & readonly flag
+set statusline+=\%{exists('g:loaded_fugitive')?fugitive#statusline():''}
+set statusline+=%#error# " highlight with error color setting
+set statusline+=%{&paste?'[paste]':''} " show "set paste" mode
+set statusline+=%* " reset color setting
+set statusline+=%= " separate statusline in left and right
+set statusline+=[%{&ff}] " file format
+set statusline+=[%{strlen(&fenc)?&fenc:&enc}] " file encoding
+set statusline+=%y " file type
+set statusline+=[%P\ %l/%L\:\ %v\] " location in file
 
 "
 " Keyboard shortcuts
 "
 let mapleader='\'
 nmap <Leader>p :set paste!<CR>
+
+"enable the numbering
+nmap <Leader>n :setlocal number!<CR>
 
 
 "
@@ -48,7 +71,10 @@ autocmd Filetype json set ts=4 sw=4
 autocmd Filetype json let g:indentLine_setConceal = 0
 autocmd Filetype json :IndentGuidesEnable
 
-
+"
+" syntastic
+"
+let g:syntastic_json_checkers=['jsonlint']
 
 "
 " vimwiki
