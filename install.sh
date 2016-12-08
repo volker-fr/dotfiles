@@ -30,7 +30,8 @@ ubuntuPackages() {
     sudo apt install -y openssh-server
     sudo apt install -y duplicity python-boto
     sudo apt install -y libsource-highlight-common
-    sudo apt install -y jsonlint
+    # vim code checkers
+    sudo apt install -y jsonlint shellcheck
 
     vagrantVersion=1.8.7
     if ! dpkg -l|grep vagrant|grep -q "$vagrantVersion"; then
@@ -62,10 +63,11 @@ macos() {
     brew install findutils
     brew install mplayer
     brew install source-highlight
-    brew install jsonlint
     brew install awscli
     brew install watch
     brew install ffmpeg
+    # vim code checker
+    brew install jsonlint shellcheck
 
     brew install Caskroom/cask/iterm2
     brew install Caskroom/cask/docker
@@ -116,4 +118,4 @@ main() {
     esac
 }
 
-main $@
+main "$@"
