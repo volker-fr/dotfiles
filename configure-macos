@@ -11,6 +11,10 @@ defaults write com.apple.Dock tilesize -int 30 && killall -9 Dock
 # Disable transparency in the menu bar etc.
 defaults write com.apple.universalaccess reduceTransparency -bool true
 
+# Avoid creating .DS_Store files on network or USB volumes
+defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
+defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
+
 # Manual:
 # iterm => profile => color => choose solarized-dark
 # preferences => display => scaled => higher resolution
@@ -19,3 +23,4 @@ defaults write com.apple.universalaccess reduceTransparency -bool true
 # preferences => date & time => show date + show day of week
 # preferences => bluetooth => show BT in menu bar
 # preferences => batter => show percentage
+# dock => preferences => disable minimize windows into application icon
