@@ -1,0 +1,25 @@
+#!/bin/bash
+brew update
+brew upgrade
+
+for app in $(brew cask list); do
+        cver="$(brew cask info "${app}" | head -n 1 | cut -d " " -f 2)"
+        ivers=$(cd "/usr/local/Caskroom/${app}/.metadata/" && find -- * -maxdepth 0 | tr '\n' ' ' | sed -e 's/ $//')
+        aivers=(${ivers})
+        nvers=${#aivers[@]}
+        if [[ ${nvers} -eq 1 ]]; then
+                echo "${ivers}" | grep -q "^${cver}$" &&
+                {
+                        continue
+                }
+        fi
+        echo "[+] Fixing ${app} from ${ivers} to ${cver} ..."
+        echo "Press return to update the package"
+        read -r
+        brew cask uninstall "${app}" --force
+        brew cask install "${app}"
+done
+
+# Cleanup
+brew cleanup
+rm -rf ~/Library/Caches/Homebrew
