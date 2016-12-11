@@ -142,6 +142,7 @@ plex(){
             -e PUID=$(id -u $USER) \
             -e PGID=$(id -g $USER) \
             -e TZ="$(cat /etc/timezone)" \
+            -e PLEX_ALLOWED_NETWORKS="192.168.0.0/16" \
             -v ${HOME}/localdata/dotfiles/plex/config:/config \
             -v ${HOME}/localdata/anschauen/tvshows:/data/tvshows:ro \
             -v ${HOME}/localdata/anschauen:/data/movies:ro \
