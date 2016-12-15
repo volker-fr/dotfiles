@@ -66,6 +66,7 @@ macos() {
     brew install awscli
     brew install watch
     brew install ffmpeg
+    brew install imagemagick
     # vim code checker
     brew install jsonlint shellcheck
 
