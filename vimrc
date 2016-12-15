@@ -6,7 +6,9 @@ Plug 'vimwiki/vimwiki'
 Plug 'altercation/vim-colors-solarized'
 Plug 'Yggdroot/indentLine'
 Plug 'nathanaelkane/vim-indent-guides' " due of json issues with Yggdroot/indentLine
-Plug 'vim-syntastic/syntastic'
+Plug 'vim-syntastic/syntastic' " testing
+Plug 'airblade/vim-gitgutter' " show git changes
+Plug 'tpope/vim-fugitive' " show git changes
 call plug#end()
 
 "
@@ -16,9 +18,13 @@ set undofile " create <FILENAME>.un~ to undo steps even when file was closed
 set undodir=$HOME/.cache/vim/ " where to store the undofile
 
 set expandtab " tab becomes whitespace
+set tabstop=4  " one expanded tab is 4 chars long
+set shiftwidth=4 " how long should a auto ident be shifted in?
 
 set hlsearch " highlight the word we search for
 set incsearch " start searching & hilightning before return is pressed
+
+set wildmenu " show more options on :command<tab> tabcompletion
 
 "
 " Status line
@@ -54,6 +60,9 @@ nmap <Leader>n :setlocal number!<CR>
 syntax enable
 set background=dark
 colorscheme solarized
+"
+" background git-gutter sidebar
+highlight SignColumn ctermbg=0
 
 highlight WhitespaceEOL ctermbg=red guibg=red
 match WhitespaceEOL /\s\+$/
@@ -74,7 +83,8 @@ autocmd Filetype json :IndentGuidesEnable
 "
 " syntastic
 "
-let g:syntastic_json_checkers=['jsonlint']
+"let g:syntastic_json_checkers=['jsonlint']
+"let g:syntastic_sh_checkers=['shellcheck']
 
 "
 " vimwiki
