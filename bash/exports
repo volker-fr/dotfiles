@@ -1,12 +1,10 @@
 export PATH=/usr/local/bin:/usr/local/sbin:${PATH}:/sbin:/usr/sbin
 export PATH=${PATH}:~/repos/dotfiles/bin
 
-# colored less
-if [ -e '/usr/share/source-highlight/src-hilite-lesspipe.sh' ]; then
-        export LESSOPEN="| /usr/share/source-highlight/src-hilite-lesspipe.sh %s"
+# load ~/.bc.rc config
+export BC_ENV_ARGS="$HOME/.bc.rc"
 
-elif [ -e '/usr/local/bin/src-hilite-lesspipe.sh' ];then
-        export LESSOPEN="| /usr/local/bin/src-hilite-lesspipe.sh %s"
-fi
+# colored less
+export LESSOPEN="| $HOME/repos/dotfiles/bin/src-hilite-lesspipe.sh %s"
 
 export LESS="-R"

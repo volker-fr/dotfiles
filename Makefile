@@ -8,6 +8,7 @@ git-dotfiles:
 	ln -sfn $(CURDIR)/i3 $(HOME)/.i3
 	ln -sf $(CURDIR)/tmux.conf $(HOME)/.tmux.conf
 	ln -sf $(CURDIR)/Xresources $(HOME)/.Xresources
+	ln -sf $(CURDIR)/bc.rc $(HOME)/.bc.rc
 	@# bash
 	ln -sfn $(CURDIR)/bash $(HOME)/.bash
 	ln -sf $(CURDIR)/bashrc $(HOME)/.bashrc
