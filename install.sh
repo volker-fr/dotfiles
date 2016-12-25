@@ -67,6 +67,7 @@ macos() {
     brew install watch
     brew install ffmpeg
     brew install imagemagick
+    brew install jq
     # vim code checker
     brew install jsonlint shellcheck
 
@@ -90,6 +91,7 @@ macos() {
     brew install Caskroom/cask/vagrant
     brew install Caskroom/cask/tunnelblick
     brew install Caskroom/cask/x-lite
+    brew install Caskroom/cask/yubikey-piv-manager
 }
 
 usage() {
