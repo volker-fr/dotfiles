@@ -52,7 +52,7 @@ ubuntu() {
     sudo usermod -a -G docker volker
 }
 
-macos() {
+macosPackages() {
     if [ ! -f '/usr/local/bin/brew' ]; then
         ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     fi
@@ -69,7 +69,7 @@ macos() {
     brew install imagemagick
     brew install jq
     # vim code checker
-    brew install jsonlint shellcheck
+    brew install jsonlint shellcheck flake8
 
     brew install Caskroom/cask/iterm2
     brew install Caskroom/cask/docker
@@ -92,6 +92,20 @@ macos() {
     brew install Caskroom/cask/tunnelblick
     brew install Caskroom/cask/x-lite
     brew install Caskroom/cask/yubikey-piv-manager
+    brew install Caskroom/cask/gnucash
+}
+
+macos() {
+    macosPackages
+
+    # font for vim-airline
+    cd /tmp
+    git clone https://github.com/powerline/fonts.git
+    cd fonts
+    ./install.sh
+    echo "========================================================="
+    echo "= TODO: IN ITERM CHOOSE FONT 'Meslo LG M for Powerline' ="
+    echo "========================================================="
 }
 
 usage() {
