@@ -11,7 +11,7 @@ installDotfiles(){
         # File existing but not linked?
         if [ -e "$target" ] && [ ! -L "$target" ]; then
             echo "TODO: $target exists but is not a link. Please delete it"
-            continue
+            exit 1
         # link it
         elif [ ! -e "$target" ]; then
             echo "* linking $file to $target"
@@ -41,16 +41,27 @@ installDotfiles(){
         xdg-user-dirs-update --set MUSIC "$HOME"
         xdg-user-dirs-update --set PICTURES "$HOME"
         xdg-user-dirs-update --set VIDEOS "$HOME"
+
+        # don't backup vagrant
+        mkdir -p "$HOME/no-backup/dotfiles"
+        if [ -e "$HOME/.vagrant.d" ] && [ ! -L "$HOME/.vagrant.d" ]; then
+            echo "$HOME/.vagrant.d exists but is not a link"
+            echo "consider moving it to ~/no-backup/dotfiles/dot_vagrant.d"
+            exit 1
+        fi
+        test -d "$HOME/no-backup/dotfiles/dot_vagrant.d" \
+            && ln -sfn "$HOME/no-backup/dotfiles/dot_vagrant.d"
     fi
 
     # link ssh to localdata directory
     dotSSH="$HOME/localdata/dotfiles/dot_ssh"
     mkdir -p "$dotSSH" && chmod 700 "$dotSSH"
     if [ -e "$HOME/.ssh" ] && [ ! -L "$HOME/.ssh" ]; then
-        echo "TODO: ~/.ssh exists but isn't a link"
-    else
-        ln -sfn "$dotSSH" "$HOME/.ssh"
+        echo "$HOME/.ssh exists but isn't a link"
+        echo "consider moving it to $dotSSH"
+        exit 1
     fi
+    test -e "$HOME/.ssh" || ln -sfn "$dotSSH" "$HOME/.ssh"
     sshConfig="$dotSSH/config"
     test -f "$sshConfig" || cp "$repoDir/ssh/config" "$sshConfig"
     mkdir -p "$HOME/.ssh/sessions" && chmod 700 "$HOME/.ssh/sessions"
@@ -62,7 +73,12 @@ installDotfiles(){
         https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
     # Thunderbird
-    test -L "$HOME/.thunderbird" && rm -rf "$HOME/.thunderbird"
+    mkdir -p "$HOME/localdata/dotfiles"
+    if [ -e "$HOME/.thunderbird" ] && [ ! -L "$HOME/.thunderbird" ]; then
+        echo "$HOME/.thunderbird exists but is not a link"
+        echo "consider moving it to $HOME/localdata/dotfiles/dot_thunderbird"
+        exit 1
+    fi
     test -d "$HOME/localdata/dotfiles/dot_thunderbird" \
         && ln -sfn "$HOME/localdata/dotfiles/dot_thunderbird" \
            "$HOME/.thunderbird"
