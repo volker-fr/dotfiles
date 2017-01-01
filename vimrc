@@ -6,24 +6,37 @@ Plug 'vimwiki/vimwiki'
 Plug 'altercation/vim-colors-solarized'
 Plug 'Yggdroot/indentLine'
 Plug 'nathanaelkane/vim-indent-guides' " due of json issues with Yggdroot/indentLine
-Plug 'vim-syntastic/syntastic'
+Plug 'vim-syntastic/syntastic' " testing
+Plug 'airblade/vim-gitgutter' " show git changes
+Plug 'tpope/vim-fugitive' " show git changes
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 call plug#end()
 
 "
 " General settings
 "
-set undofile " create <FILENAME>.un~ to undo steps even when file was closed
-set undodir=$HOME/.cache/vim/ " where to store the undofile
+set undodir=$HOME/.vim/cache " where to store the undofile
+set undofile            " create files to undo even after vim is closed
 
-set expandtab " tab becomes whitespace
+" Tab settings
+set expandtab           " tab becomes whitespace
+set tabstop=4           " one expanded tab is 4 chars long
+set shiftwidth=4        " how long should a auto ident be shifted in?
 
-set hlsearch " highlight the word we search for
-set incsearch " start searching & hilightning before return is pressed
+" search settings
+set hlsearch            " highlight the word we search for
+set incsearch           " start searching & hilight before return is pressed
+
+" misc
+set wildmenu            " show more options on :command<tab> tabcompletion
+set colorcolumn=80      " show 80 character limit
 
 "
 " Status line
 "
 set laststatus=2 " status bar. show 2=always, 1=only when more as one window
+" If airline isn't used, the following statusbar will be shown
 set statusline=
 set statusline+=[%n] " vim buffer number
 set statusline+=[%<%F] " filename full path
@@ -37,6 +50,7 @@ set statusline+=[%{&ff}] " file format
 set statusline+=[%{strlen(&fenc)?&fenc:&enc}] " file encoding
 set statusline+=%y " file type
 set statusline+=[%P\ %l/%L\:\ %v\] " location in file
+
 
 "
 " Keyboard shortcuts
@@ -54,6 +68,9 @@ nmap <Leader>n :setlocal number!<CR>
 syntax enable
 set background=dark
 colorscheme solarized
+"
+" background git-gutter sidebar
+highlight SignColumn ctermbg=0
 
 highlight WhitespaceEOL ctermbg=red guibg=red
 match WhitespaceEOL /\s\+$/
@@ -66,15 +83,15 @@ autocmd Filetype !json BufWinLeave *.* mkview
 autocmd Filetype !json BufWinEnter *.* silent loadview
 
 " Indent plugin https://github.com/Yggdroot/indentLine/issues/172
-autocmd Filetype json set ts=4 sw=4
+autocmd Filetype json set ts=2 sw=2
 "autocmd Filetype json %!python -m json.tool
 autocmd Filetype json let g:indentLine_setConceal = 0
 autocmd Filetype json :IndentGuidesEnable
 
 "
-" syntastic
+" airline
 "
-let g:syntastic_json_checkers=['jsonlint']
+let g:airline_powerline_fonts = 1   " use UFT-8 symbols
 
 "
 " vimwiki

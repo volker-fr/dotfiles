@@ -141,6 +141,11 @@ nmap(){
                 --net host \
                 jess/nmap "$@"
 }
+oathtool(){
+    docker run --rm -it \
+         -v /etc/localtime:/etc/localtime \
+        toolbelt/oathtool "$@"
+}
 plex(){
         del_stopped plex
 

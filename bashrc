@@ -45,26 +45,28 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
 if ! shopt -oq posix; then
-  if [ -f /usr/share/bash-completion/bash_completion ]; then
-    . /usr/share/bash-completion/bash_completion
-  elif [ -f /etc/bash_completion ]; then
-    . /etc/bash_completion
-  fi
+  # shellcheck disable=SC1091
+  test -f /usr/share/bash-completion/bash_completion &&
+    source /usr/share/bash-completion/bash_completion
+  # shellcheck disable=SC1091
+  test -f /etc/bash_completion && source /etc/bash_completion
 fi
 
-source ~/.bash/aliases
-source ~/.bash/docker
-source ~/.bash/functions
-source ~/.bash/exports
-source ~/.bash/prompt
-source ~/.bash/mark-and-jump
-source ~/.bash/completion
+for configFile in ~/.bash/*; do
+    # shellcheck source=/dev/null
+    source "$configFile"
+done
+# shellcheck source=/dev/null
 [ -f ~/localdata/dotfiles/dot_bashrc.local ] && \
-	source  ~/localdata/dotfiles/dot_bashrc.local
+    source  ~/localdata/dotfiles/dot_bashrc.local
 
 # enable color support of ls and also add handy aliases
-if `which dircolors` > /dev/null; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+if which dircolors > /dev/null; then
+    if test -r ~/.dircolors; then
+        eval "$(dircolors -b ~/.dircolors)"
+    else
+        eval "$(dircolors -b)"
+    fi
     alias ls='ls --color=auto'
     #alias dir='dir --color=auto'
     #alias vdir='vdir --color=auto'
@@ -76,3 +78,6 @@ fi
 
 # colored GCC warnings and errors
 #export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
+# default umask
+umask 0077
