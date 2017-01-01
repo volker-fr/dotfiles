@@ -1,7 +1,4 @@
-if [ -d /etc/bash_compeltion.d ]; then
-        source /uetc/bash_compeltion.d/*
-fi
-
-if [ -d /usr/local/etc/bash_completion.d ]; then
-        source /usr/local/etc/bash_completion.d/*
-fi
+test -d /etc/bash_compeltion.d \
+    && source /uetc/bash_compeltion.d/*
+test -d /usr/local/etc/bash_completion.d \
+    && source /usr/local/etc/bash_completion.d/*
