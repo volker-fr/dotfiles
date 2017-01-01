@@ -1,4 +1,77 @@
 #!/bin/sh -e
+#set -x
+
+repoDir="$(dirname "$(readlink -f "$0")")"
+
+installDotfiles(){
+    # regular dotfiles to link
+    for file in Xresources bash bashrc bc.rc i3 tmux.conf vimrc; do
+        source="$repoDir/$file"
+        target="$HOME/.$file"
+        # File existing but not linked?
+        if [ -e "$target" ] && [ ! -L "$target" ]; then
+            echo "TODO: $target exists but is not a link. Please delete it"
+            continue
+        # link it
+        elif [ ! -e "$target" ]; then
+            echo "* linking $file to $target"
+            ln -s "$source" "$target"
+        # already linked
+        else
+            echo "$file already linked to $target"
+        fi
+    done
+
+    [ -f "$HOME/.dircolors" ] && wget -q -O "$HOME/.dircolors" \
+        https://raw.githubusercontent.com/seebi/dircolors-solarized/master/dircolors.256dark
+
+    if [ "$(uname -s)" = "Linux" ]; then
+        # To open URL's in a docker container
+        mkdir -p "$HOME/.local/share/applications"
+        ln -sf "$repoDir/x11/browser.desktop" \
+            "$HOME/.local/share/applications/"
+        update-desktop-database "$HOME/.local/share/applications"
+        gvfs-mime --set "x-scheme-handler/http" "browser.desktop"
+        gvfs-mime --set "x-scheme-handler/https" "browser.desktop"
+
+        # update default xdg-dirs
+        xdg-user-dirs-update --set DESKTOP "$HOME"
+        xdg-user-dirs-update --set TEMPLATES "$HOME"
+        xdg-user-dirs-update --set DOCUMENTS "$HOME"
+        xdg-user-dirs-update --set MUSIC "$HOME"
+        xdg-user-dirs-update --set PICTURES "$HOME"
+        xdg-user-dirs-update --set VIDEOS "$HOME"
+    fi
+
+    # link ssh to localdata directory
+    dotSSH="$HOME/localdata/dotfiles/dot_ssh"
+    mkdir -p "$dotSSH" && chmod 700 "$dotSSH"
+    if [ -e "$HOME/.ssh" ] && [ ! -L "$HOME/.ssh" ]; then
+        echo "TODO: ~/.ssh exists but isn't a link"
+    else
+        ln -sfn "$dotSSH" "$HOME/.ssh"
+    fi
+    sshConfig="$dotSSH/config"
+    test -f "$sshConfig" || cp "$repoDir/ssh/config" "$sshConfig"
+    mkdir -p "$HOME/.ssh/sessions" && chmod 700 "$HOME/.ssh/sessions"
+
+    # vim
+    mkdir -p "$HOME/.vim/autoload"
+    # overwriting is ok in case the code updates
+    wget -q -O "$HOME/.vim/autoload/plug.vim" \
+        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
+    # Thunderbird
+    test -L "$HOME/.thunderbird" && rm -rf "$HOME/.thunderbird"
+    test -d "$HOME/localdata/dotfiles/dot_thunderbird" \
+        && ln -sfn "$HOME/localdata/dotfiles/dot_thunderbird" \
+           "$HOME/.thunderbird"
+
+    # local bashrc
+    test -f "$HOME/localdata/dotfiles/dot_bashrc.local" \
+        && ln -sf "$HOME/localdata/dotfiles/dot_bashrc.local" \
+           "$HOME/.bashrc.local"
+}
 
 disableLidCloseSleep() {
     if ! grep -q "^HandleLidSwitch" /etc/systemd/logind.conf; then
@@ -11,8 +84,7 @@ ubuntuPackages() {
     sudo apt install -y encfs
     sudo apt install -y iotop vim git redshift-gtk tmux keepass2
     sudo apt install -y owncloud-client
-
-    # i3
+# i3
     echo "deb http://debian.sur5r.net/i3/ $(lsb_release -c -s) universe" |sudo tee /etc/apt/sources.list.d/i3wm.list
     sudo apt update
     sudo apt --allow-unauthenticated install -y sur5r-keyring
@@ -112,6 +184,7 @@ usage() {
     echo "$0 <argument>:"
     echo "   $0 ubuntu"
     echo "   $0 macos"
+    echo "   $0 dotfiles"
 }
 
 main() {
@@ -120,14 +193,17 @@ main() {
        exit 1
     fi
 
-    set -x
-
     case "$1" in
         ubuntu)
+            installDotfiles
             ubuntu
             ;;
         "macos")
+            installDotfiles
             macos
+            ;;
+        "dotfiles")
+            installDotfiles
             ;;
         *)
             usage
