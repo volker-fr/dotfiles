@@ -50,7 +50,7 @@ installDotfiles(){
             exit 1
         fi
         test -d "$HOME/no-backup/dotfiles/dot_vagrant.d" \
-            && ln -sfn "$HOME/no-backup/dotfiles/dot_vagrant.d"
+            && ln -sfn "$HOME/no-backup/dotfiles/dot_vagrant.d" "$HOME/.vagrant.d"
     fi
 
     # link ssh to localdata directory
