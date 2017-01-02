@@ -6,140 +6,138 @@
 # Helper Functions
 #
 dcleanup(){
-	local containers
-	containers=( $(docker ps -aq 2>/dev/null) )
-	docker rm "${containers[@]}" 2>/dev/null
-	local volumes
-	volumes=( $(docker ps --filter status=exited -q 2>/dev/null) )
-	docker rm -v "${volumes[@]}" 2>/dev/null
-	local images
-	images=( $(docker images --filter dangling=true -q 2>/dev/null) )
-	docker rmi "${images[@]}" 2>/dev/null
+    local containers
+    containers=( $(docker ps -aq 2>/dev/null) )
+    docker rm "${containers[@]}" 2>/dev/null
+    local volumes
+    volumes=( $(docker ps --filter status=exited -q 2>/dev/null) )
+    docker rm -v "${volumes[@]}" 2>/dev/null
+    local images
+    images=( $(docker images --filter dangling=true -q 2>/dev/null) )
+    docker rmi "${images[@]}" 2>/dev/null
 }
 del_stopped(){
-	local name=$1
-	local state
-	state=$(docker inspect --format "{{.State.Running}}" "$name" 2>/dev/null)
+    local name=$1
+    local state
+    state=$(docker inspect --format "{{.State.Running}}" "$name" 2>/dev/null)
 
-	if [[ "$state" == "false" ]]; then
-		docker rm "$name"
-	fi
+    if [[ "$state" == "false" ]]; then
+        docker rm "$name"
+    fi
 }
 relies_on(){
-	for container in "$@"; do
-		local state
-		state=$(docker inspect --format "{{.State.Running}}" "$container" 2>/dev/null)
+    for container in "$@"; do
+        local state
+        state=$(docker inspect --format "{{.State.Running}}" "$container" 2>/dev/null)
 
-		if [[ "$state" == "false" ]] || [[ "$state" == "" ]]; then
-			echo "$container is not running, starting it for you."
-			$container
-		fi
-	done
+        if [[ "$state" == "false" ]] || [[ "$state" == "" ]]; then
+            echo "$container is not running, starting it for you."
+            $container
+        fi
+    done
 }
 
 #
 # Container Aliases
 #
 chrome(){
-        del_stopped chrome
+    del_stopped chrome
 
-	docker run -d \
-		--memory 3gb \
-		-v /etc/localtime:/etc/localtime:ro \
-		-v /tmp/.X11-unix:/tmp/.X11-unix \
-		-e "DISPLAY=unix${DISPLAY}" \
-		-v "${HOME}/Downloads:/root/OutsideOfDocker" \
-		-v "${HOME}/localdata/dotfiles/dot_chrome:/data" \
-		-v /dev/shm:/dev/shm \
-		--device /dev/snd \
-		--device /dev/dri \
-		--device /dev/video0 \
-		--device /dev/bus/usb \
-		--group-add audio \
-		--group-add video \
-		--name chrome \
-		jess/chrome --user-data-dir=/data \
-			"$@"
+    docker run -d \
+        --memory 3gb \
+        -v /etc/localtime:/etc/localtime:ro \
+        -v /tmp/.X11-unix:/tmp/.X11-unix \
+        -e "DISPLAY=unix${DISPLAY}" \
+        -v "${HOME}/Downloads:/root/OutsideOfDocker" \
+        -v "${HOME}/localdata/dotfiles/dot_chrome:/data" \
+        -v /dev/shm:/dev/shm \
+        --device /dev/snd \
+        --device /dev/dri \
+        --device /dev/video0 \
+        --device /dev/bus/usb \
+        --group-add audio \
+        --group-add video \
+        --name chrome \
+        jess/chrome --user-data-dir=/data \
+        "$@"
 }
 curl(){
-        docker run --rm -it \
-                --net host \
-                jess/curl "$@"
+    docker run --rm -it \
+        --net host \
+        jess/curl "$@"
 }
 exiftool(){
-        #git clone git@github.com:Miljar/exiftool-docker.git && cd exiftool-docker && docker build -t exiftool .
-        if [ -n "$1" ]; then
-                docker run -v "$PWD":/tmp exiftool $@
-        else
-                echo "$0 <args> <filename>"
-        fi
-        docker run -v "$PWD":/tmp exiftool $@
+    #git clone git@github.com:Miljar/exiftool-docker.git && cd exiftool-docker && docker build -t exiftool .
+    if [ -n "$1" ]; then
+        docker run -v "$PWD":/tmp exiftool "$@"
+    else
+        echo "$0 <args> <filename>"
+    fi
+    docker run -v "$PWD":/tmp exiftool "$@"
 }
 firefox(){
-	del_stopped firefox
+    del_stopped firefox
 
-	# check if firefox container is running
-	firefox_state=$(docker inspect --format "{{.State.Running}}" firefox 2>/dev/null)
-	if [[ "$firefox_state" == "true" ]]; then
-		docker exec -i firefox /usr/bin/firefox "$@" 2>/dev/null
-	else
-		docker -D run -d \
-			--memory 2gb \
-			--net host \
-			--cpuset-cpus 0 \
-			-v /etc/localtime:/etc/localtime:ro \
-			-v /tmp/.X11-unix:/tmp/.X11-unix \
-			-v "${HOME}/Downloads:/root/OutsideOfDocker" \
-			-v "${HOME}/Downloads:/root/Downloads" \
-			-v "${HOME}/localdata/dotfiles/firefox/dot_mozilla:/root/.mozilla" \
-			-v "${HOME}/localdata/dotfiles/firefox/dot_cache/mozilla:/root/.cache/mozilla" \
-			-e "DISPLAY=unix${DISPLAY}" \
-			-e GDK_SCALE \
-			-e GDK_DPI_SCALE \
-			--device /dev/snd \
-			--device /dev/dri \
-			--name firefox \
-			jess/firefox "$@"
-	fi
-
-
+    # check if firefox container is running
+    firefox_state=$(docker inspect --format "{{.State.Running}}" firefox 2>/dev/null)
+    if [[ "$firefox_state" == "true" ]]; then
+        docker exec -i firefox /usr/bin/firefox "$@" 2>/dev/null
+    else
+        docker -D run -d \
+            --memory 2gb \
+            --net host \
+            --cpuset-cpus 0 \
+            -v /etc/localtime:/etc/localtime:ro \
+            -v /tmp/.X11-unix:/tmp/.X11-unix \
+            -v "${HOME}/Downloads:/root/OutsideOfDocker" \
+            -v "${HOME}/Downloads:/root/Downloads" \
+            -v "${HOME}/localdata/dotfiles/firefox/dot_mozilla:/root/.mozilla" \
+            -v "${HOME}/localdata/dotfiles/firefox/dot_cache/mozilla:/root/.cache/mozilla" \
+            -e "DISPLAY=unix${DISPLAY}" \
+            -e GDK_SCALE \
+            -e GDK_DPI_SCALE \
+            --device /dev/snd \
+            --device /dev/dri \
+            --name firefox \
+            jess/firefox "$@"
+    fi
 }
 htop(){
-		docker run --rm -it \
-				--pid host \
-				--net none \
-				--name htop \
-				jess/htop
+    docker run --rm -it \
+        --pid host \
+        --net none \
+        --name htop \
+        jess/htop
 }
 libreoffice(){
-        del_stopped libreoffice
+    del_stopped libreoffice
 
-	if [ -f "$1" ]; then
-		echo "Mapping file $(readlink -f $1)"
-		echo "          to $1"
-		# for i3 d3menu hack execution...
-		arg1="-v"
-		arg2="$(readlink -f $1):/${1}"
-	else
-		arg1=""
-		arg2=""
-	fi
+    if [ -f "$1" ]; then
+        echo "Mapping file $(readlink -f "$1")"
+        echo "          to $1"
+        # for i3 d3menu hack execution...
+        arg1="-v"
+        arg2="$(readlink -f "$1"):/$1"
+    else
+        arg1=""
+        arg2=""
+    fi
 
-        docker run -d \
-                -v /etc/localtime:/etc/localtime:ro \
-                -v /tmp/.X11-unix:/tmp/.X11-unix \
-                -e "DISPLAY=unix${DISPLAY}" \
-                -v "${HOME}/Downloads:/root/OutsideOfDocker" \
-                $arg1 "$arg2" \
-                -e GDK_SCALE \
-                -e GDK_DPI_SCALE \
-                --name libreoffice \
-                jess/libreoffice "$@"
+    docker run -d \
+            -v /etc/localtime:/etc/localtime:ro \
+            -v /tmp/.X11-unix:/tmp/.X11-unix \
+            -e "DISPLAY=unix${DISPLAY}" \
+            -v "${HOME}/Downloads:/root/OutsideOfDocker" \
+            $arg1 "$arg2" \
+            -e GDK_SCALE \
+            -e GDK_DPI_SCALE \
+            --name libreoffice \
+            jess/libreoffice "$@"
 }
 nmap(){
-        docker run --rm -it \
-                --net host \
-                jess/nmap "$@"
+    docker run --rm -it \
+        --net host \
+        jess/nmap "$@"
 }
 oathtool(){
     docker run --rm -it \
@@ -147,69 +145,69 @@ oathtool(){
         toolbelt/oathtool "$@"
 }
 plex(){
-        del_stopped plex
+    del_stopped plex
 
-        docker run -d \
-            --name=plex \
-            --net=host \
-            -e VERSION=latest \
-            -e PUID=$(id -u $USER) \
-            -e PGID=$(id -g $USER) \
-            -e TZ="$(cat /etc/timezone)" \
-            -e PLEX_ALLOWED_NETWORKS="192.168.0.0/16" \
-            -v ${HOME}/localdata/dotfiles/plex/config:/config \
-            -v ${HOME}/localdata/anschauen/tvshows:/data/tvshows:ro \
-            -v ${HOME}/localdata/anschauen:/data/movies:ro \
-            -v ${HOME}/localdata/dotfiles/plex/transcode:/transcode \
-            linuxserver/plex
+    docker run -d \
+        --name=plex \
+        --net=host \
+        -e VERSION=latest \
+        -e PUID="$(id -u "$USER")" \
+        -e PGID="$(id -g "$USER")" \
+        -e TZ="$(cat /etc/timezone)" \
+        -e PLEX_ALLOWED_NETWORKS="192.168.0.0/16" \
+        -v "${HOME}/localdata/dotfiles/plex/config:/config" \
+        -v "${HOME}/localdata/anschauen/tvshows:/data/tvshows:ro" \
+        -v "${HOME}/localdata/anschauen:/data/movies:ro" \
+        -v "${HOME}/localdata/dotfiles/plex/transcode:/transcode" \
+        linuxserver/plex
 
-    echo $(ip route get 1 | awk '{print $NF;exit}'):32400/web
+    echo "$(ip route get 1 | awk '{print $NF;exit}'):32400/web"
 }
 slack(){
-        del_stopped slack
+    del_stopped slack
 
-        docker run -d \
-                -v /etc/localtime:/etc/localtime:ro \
-                -v /tmp/.X11-unix:/tmp/.X11-unix \
-                -e "DISPLAY=unix${DISPLAY}" \
-		--ipc="host" \
-                --device /dev/snd \
-                --device /dev/dri \
-                --device /dev/video0 \
-                --group-add audio \
-                --group-add video \
-                -v "${HOME}/localdata/dotfiles/dot_Slack:/root/.config/Slack" \
-		-v "${HOME}/Downloads:/root/OutsideOfDocker" \
-                --name slack \
-                jess/slack "$@"
+    docker run -d \
+        -v /etc/localtime:/etc/localtime:ro \
+        -v /tmp/.X11-unix:/tmp/.X11-unix \
+        -e "DISPLAY=unix${DISPLAY}" \
+        --ipc="host" \
+        --device /dev/snd \
+        --device /dev/dri \
+        --device /dev/video0 \
+        --group-add audio \
+        --group-add video \
+        -v "${HOME}/localdata/dotfiles/dot_Slack:/root/.config/Slack" \
+        -v "${HOME}/Downloads:/root/OutsideOfDocker" \
+        --name slack \
+        jess/slack "$@"
 }
 traceroute(){
-        docker run --rm -it \
-                --net host \
-                jess/traceroute "$@"
+    docker run --rm -it \
+        --net host \
+        jess/traceroute "$@"
 }
 whois(){
-        docker run --rm -it \
-                whois "$@"
+    docker run --rm -it \
+        whois "$@"
 }
 vlc(){
-	        del_stopped vlc
+    del_stopped vlc
 
-	        docker run -d \
-		                -v /etc/localtime:/etc/localtime:ro \
-		                -v /tmp/.X11-unix:/tmp/.X11-unix \
-		                -e "DISPLAY=unix${DISPLAY}" \
-		                -e GDK_SCALE \
-		                -e GDK_DPI_SCALE \
-		                -e QT_DEVICE_PIXEL_RATIO \
-				--device /dev/snd \
-				--device /dev/dri \
-		                --group-add audio \
-		                --group-add video \
-		                -v "${HOME}/localdata/anschauen:/home/vlc/anschauen" \
-		                --device /dev/dri \
-		                --name vlc \
-		                jess/vlc
+    docker run -d \
+        -v /etc/localtime:/etc/localtime:ro \
+        -v /tmp/.X11-unix:/tmp/.X11-unix \
+        -e "DISPLAY=unix${DISPLAY}" \
+        -e GDK_SCALE \
+        -e GDK_DPI_SCALE \
+        -e QT_DEVICE_PIXEL_RATIO \
+        --device /dev/snd \
+        --device /dev/dri \
+        --group-add audio \
+        --group-add video \
+        -v "${HOME}/localdata/anschauen:/home/vlc/anschauen" \
+        --device /dev/dri \
+        --name vlc \
+        jess/vlc
 }
 x11vnc(){
     export DISPLAY=:0
@@ -223,7 +221,7 @@ x11vnc(){
         x11vnc "$@"
 }
 w3m(){
-        docker run --rm -it \
-                --net host \
-                w3m "$@"
+    docker run --rm -it \
+        --net host \
+        w3m "$@"
 }
