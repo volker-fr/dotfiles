@@ -5,12 +5,13 @@ call plug#begin('~/.vim/plugged')
 Plug 'vimwiki/vimwiki'
 Plug 'altercation/vim-colors-solarized'
 Plug 'Yggdroot/indentLine'
-Plug 'nathanaelkane/vim-indent-guides' " due of json issues with Yggdroot/indentLine
+Plug 'nathanaelkane/vim-indent-guides' " due of json issues with indentLine
 Plug 'vim-syntastic/syntastic' " testing
-Plug 'airblade/vim-gitgutter' " show git changes
-Plug 'tpope/vim-fugitive' " show git changes
+Plug 'airblade/vim-gitgutter' " show git changes on the left side of each line
+Plug 'tpope/vim-fugitive' " show git branch in status line & :Gblame
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
+Plug 'tpope/vim-endwise' " auto end, fi
 call plug#end()
 
 "
@@ -27,10 +28,14 @@ set shiftwidth=4        " how long should a auto ident be shifted in?
 " search settings
 set hlsearch            " highlight the word we search for
 set incsearch           " start searching & hilight before return is pressed
+set ignorecase          " Don't care about case when searching
 
 " misc
 set wildmenu            " show more options on :command<tab> tabcompletion
 set colorcolumn=80      " show 80 character limit
+set title               " set title/also show filename in iterm etc.
+set showcmd             " show command input as I type (right bottom)
+set cursorline          " show the line we are in
 
 "
 " Status line
@@ -83,15 +88,18 @@ autocmd Filetype !json BufWinLeave *.* mkview
 autocmd Filetype !json BufWinEnter *.* silent loadview
 
 " Indent plugin https://github.com/Yggdroot/indentLine/issues/172
-autocmd Filetype json set ts=2 sw=2
+autocmd Filetype json set ts=4 sw=4
 "autocmd Filetype json %!python -m json.tool
 autocmd Filetype json let g:indentLine_setConceal = 0
 autocmd Filetype json :IndentGuidesEnable
 
+autocmd BufReadPost Jenkinsfile set syntax=groovy
+autocmd BufReadPost Jenkinsfile set filetype=groovy
+
 "
 " airline
 "
-let g:airline_powerline_fonts = 1   " use UFT-8 symbols
+let g:airline_powerline_fonts = 1   " use UFT-8 symbols; requires patched font
 
 "
 " vimwiki
