@@ -40,6 +40,16 @@ relies_on(){
 #
 # Container Aliases
 #
+cfn-check(){
+    if [ -f "$1" ]; then
+        arg1="$(readlink -f "$1"):/$1"
+    else
+        arg1="/tmp:/tmp"
+    fi
+    docker run --rm -it \
+        -v "$arg1" \
+        cfn-check "$@"
+}
 chrome(){
     del_stopped chrome
 
@@ -101,6 +111,19 @@ firefox(){
             --name firefox \
             jess/firefox "$@"
     fi
+}
+gcalcli(){
+    if [ ! -d "${HOME}/localdata/dotfiles/gcalcli/" ]; then
+        mkdir -p "${HOME}/localdata/dotfiles/gcalcli"
+        touch "${HOME}/localdata/dotfiles/gcalcli/gcalcli_oauth"
+        touch "${HOME}/localdata/dotfiles/gcalcli/gcalclirc"
+    fi
+    docker run --rm -it \
+        -v /etc/localtime:/etc/localtime:ro \
+        -v "${HOME}/localdata/dotfiles/gcalcli/gcalcli_oauth:/home/gcalcli/.gcalcli_oauth" \
+        -v "${HOME}/localdata/dotfiles/gcalcli/gcalclirc:/home/gcalcli/.gcalclirc" \
+        --name gcalcli \
+        jess/gcalcli "$@"
 }
 htop(){
     docker run --rm -it \
@@ -188,7 +211,7 @@ traceroute(){
 }
 whois(){
     docker run --rm -it \
-        whois "$@"
+        airtonzanon/whois "$@"
 }
 vlc(){
     del_stopped vlc
@@ -223,5 +246,5 @@ x11vnc(){
 w3m(){
     docker run --rm -it \
         --net host \
-        w3m "$@"
+        corbinu/alpine-w3m "$@"
 }
