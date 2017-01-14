@@ -119,7 +119,7 @@ ubuntuPackages() {
     sudo apt install -y mplayer
     sudo apt install -y openssh-server
     sudo apt install -y duplicity python-boto
-    sudo apt install -y libsource-highlight-common
+    sudo apt install -y source-highlight
     # vim code checkers
     sudo apt install -y jsonlint shellcheck
 
