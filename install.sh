@@ -67,6 +67,8 @@ installDotfiles(){
     mkdir -p "$HOME/.ssh/sessions" && chmod 700 "$HOME/.ssh/sessions"
 
     # vim
+    mkdir -p "$HOME/.vim/cache"
+    mkdir -p "$HOME/.vim/view"
     mkdir -p "$HOME/.vim/autoload"
     # overwriting is ok in case the code updates
     wget -q -O "$HOME/.vim/autoload/plug.vim" \
@@ -156,6 +158,8 @@ macosPackages() {
     brew install ffmpeg
     brew install imagemagick
     brew install jq
+    # tmux tabcompletion etc will fail without it
+    brew install bash-completion
     # vim code checker
     brew install jsonlint shellcheck flake8
 
