@@ -1,4 +1,11 @@
-test -d /etc/bash_compeltion.d \
-    && source /uetc/bash_compeltion.d/*
-test -d /usr/local/etc/bash_completion.d \
-    && source /usr/local/etc/bash_completion.d/*
+#!/bin/bash
+
+# shellcheck disable=SC1091
+[ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion
+
+if [ -d /etc/bash_completion.d ]; then
+    for file in /etc/bash_completion.d/*; do
+        # shellcheck disable=SC1090
+        source "$file"
+    done
+fi
