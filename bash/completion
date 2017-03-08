@@ -5,6 +5,13 @@
 
 if [ -d /etc/bash_completion.d ]; then
     for file in /etc/bash_completion.d/*; do
+        # broken in ubuntu
+        if [ "$(lsb_release -i -s)" = "Ubuntu" ]; then
+            bn=$(basename "$file")
+            if [ "$bn" = "grub" ] || [ "$bn" = "openvpn" ]; then
+                continue
+            fi
+        fi
         # shellcheck disable=SC1090
         source "$file"
     done

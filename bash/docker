@@ -125,6 +125,19 @@ gcalcli(){
         --name gcalcli \
         jess/gcalcli "$@"
 }
+handbreak(){
+    del_stopped handbreak
+
+    docker run --rm -it \
+        --privileged \
+        -v /etc/localtime:/etc/localtime:ro \
+        -v /tmp/.X11-unix:/tmp/.X11-unix \
+        -v /dev/sr0:/dev/sr0 \
+        -v /dev/cdrom:/dev/cdrom \
+        -v ~/localdata/dvd-rips:/rips \
+        --name handbrake \
+        marvambass/handbrake "$@"
+}
 htop(){
     docker run --rm -it \
         --pid host \
