@@ -12,6 +12,12 @@ if [ -d /etc/bash_completion.d ]; then
                 continue
             fi
         fi
+        if [ "$(lsb_release -i -s)" = "Debian" ]; then
+            bn=$(basename "$file")
+            if [ "$bn" = "debconf" ] || [ "$bn" = "grub" ] || [ "$bn" = "insserv" ]; then
+                continue
+            fi
+        fi
         # shellcheck disable=SC1090
         source "$file"
     done

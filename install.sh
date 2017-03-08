@@ -30,9 +30,13 @@ installDotfiles(){
         mkdir -p "$HOME/.local/share/applications"
         ln -sf "$repoDir/x11/browser.desktop" \
             "$HOME/.local/share/applications/"
-        update-desktop-database "$HOME/.local/share/applications"
-        gvfs-mime --set "x-scheme-handler/http" "browser.desktop"
-        gvfs-mime --set "x-scheme-handler/https" "browser.desktop"
+        if which update-desktop-database >/dev/null; then
+            update-desktop-database "$HOME/.local/share/applications"
+        fi
+        if which gvfs-mime >/dev/null; then
+            gvfs-mime --set "x-scheme-handler/http" "browser.desktop"
+            gvfs-mime --set "x-scheme-handler/https" "browser.desktop"
+        fi
 
         # update default xdg-dirs
         xdg-user-dirs-update --set DESKTOP "$HOME"
@@ -163,6 +167,8 @@ mainserver() {
 
     curl -L https://github.com/docker/compose/releases/download/2.11.2/run.sh |sudo tee /usr/local/bin/docker-compose
     sudo chmod +x /usr/local/bin/docker-compose
+
+    ln -s "$HOME/localdata/git" "$HOME/git"
 
     echo "SSHD: disable root login & port 222"
 }
