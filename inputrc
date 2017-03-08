@@ -1,0 +1,2 @@
+# Disable beeping in bash & some other apps
+set prefer-visible-bell

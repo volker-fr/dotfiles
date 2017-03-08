@@ -5,7 +5,7 @@ repoDir="$(dirname "$(readlink -f "$0")")"
 
 installDotfiles(){
     # regular dotfiles to link
-    for file in Xresources bash bashrc bc.rc i3 tmux.conf vimrc; do
+    for file in Xresources bash bashrc bc.rc i3 tmux.conf vimrc inputrc; do
         source="$repoDir/$file"
         target="$HOME/.$file"
         # File existing but not linked?
@@ -238,6 +238,7 @@ macos() {
 
 usage() {
     echo "$0 <argument>:"
+    echo "   $0 mainserver"
     echo "   $0 ubuntu"
     echo "   $0 macos"
     echo "   $0 dotfiles"
