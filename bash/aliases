@@ -6,4 +6,5 @@ alias mv="mv -i"
 alias rm="rm -i"
 if [ "$(uname)" != 'Darwin' ]; then
     alias ps='ps -H'
+    alias zcat='gunzip -c'
 fi

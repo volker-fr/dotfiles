@@ -22,6 +22,7 @@ killall SystemUIServer
 
 # Manual:
 # iterm => profile => color => choose solarized-dark
+#                  => keys => left options key acts as: +Esc to allow bash meta keys to work
 # preferences => display => scaled => higher resolution
 # preferences => security & privacy => general => require password "Immediately"
 # preferences => security & privacy => firewall => turn on
