@@ -1,5 +1,5 @@
 #!/bin/sh -e
-#set -x
+set -x
 
 repoDir="$(dirname "$(readlink -f "$0")")"
 
@@ -17,8 +17,8 @@ installDotfiles(){
             echo "* linking $file to $target"
             ln -s "$source" "$target"
         # already linked
-        else
-            echo "$file already linked to $target"
+        #else
+        #    echo "$file already linked to $target"
         fi
     done
 
@@ -26,25 +26,28 @@ installDotfiles(){
         https://raw.githubusercontent.com/seebi/dircolors-solarized/master/dircolors.256dark
 
     if [ "$(uname -s)" = "Linux" ]; then
-        # To open URL's in a docker container
-        mkdir -p "$HOME/.local/share/applications"
-        ln -sf "$repoDir/x11/browser.desktop" \
-            "$HOME/.local/share/applications/"
-        if which update-desktop-database >/dev/null; then
-            update-desktop-database "$HOME/.local/share/applications"
-        fi
-        if which gvfs-mime >/dev/null; then
-            gvfs-mime --set "x-scheme-handler/http" "browser.desktop"
-            gvfs-mime --set "x-scheme-handler/https" "browser.desktop"
-        fi
+        # only run these settings if X11 is installed/running
+        if pidof X > /dev/null; then
+            # To open URL's in a docker container
+            mkdir -p "$HOME/.local/share/applications"
+            ln -sf "$repoDir/x11/browser.desktop" \
+                "$HOME/.local/share/applications/"
+            if which update-desktop-database >/dev/null; then
+                update-desktop-database "$HOME/.local/share/applications"
+            fi
+            if which gvfs-mime >/dev/null; then
+                gvfs-mime --set "x-scheme-handler/http" "browser.desktop"
+                gvfs-mime --set "x-scheme-handler/https" "browser.desktop"
+            fi
 
-        # update default xdg-dirs
-        xdg-user-dirs-update --set DESKTOP "$HOME"
-        xdg-user-dirs-update --set TEMPLATES "$HOME"
-        xdg-user-dirs-update --set DOCUMENTS "$HOME"
-        xdg-user-dirs-update --set MUSIC "$HOME"
-        xdg-user-dirs-update --set PICTURES "$HOME"
-        xdg-user-dirs-update --set VIDEOS "$HOME"
+            # update default xdg-dirs
+            xdg-user-dirs-update --set DESKTOP "$HOME"
+            xdg-user-dirs-update --set TEMPLATES "$HOME"
+            xdg-user-dirs-update --set DOCUMENTS "$HOME"
+            xdg-user-dirs-update --set MUSIC "$HOME"
+            xdg-user-dirs-update --set PICTURES "$HOME"
+            xdg-user-dirs-update --set VIDEOS "$HOME"
+        fi
 
         # don't backup vagrant
         mkdir -p "$HOME/no-backup/dotfiles"
@@ -147,12 +150,16 @@ ubuntu() {
 }
 
 mainserver() {
-    su -c "apt install -y sudo"
-    su -c "usermod -a -G sudo volker"
-    newgrp sudo
+    if ! dpkg -l|grep sudo > /dev/null; then
+        su -c "apt install -y sudo"
+    fi
+    if ! id|grep sudo > /dev/null; then
+        su -c "usermod -a -G sudo volker"
+        echo "Execute\n   newgrp sudo\nand reruncommand"
+    fi
     sudo apt remove --purge -y rdnssd
     sudo apt install -y tmux vim rsync git
-    sudo apt install -y lsb-release unzip rss2email
+    sudo apt install -y lsb-release unzip rss2email ssmtp
 
     # For docker
     sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
@@ -165,12 +172,22 @@ mainserver() {
     sudo apt install -y docker-ce
     sudo usermod -a -G docker volker
 
-    curl -L https://github.com/docker/compose/releases/download/2.11.2/run.sh |sudo tee /usr/local/bin/docker-compose
-    sudo chmod +x /usr/local/bin/docker-compose
+    if [ ! -f /usr/local/bin/docker-compose ]; then
+        curl -L https://github.com/docker/compose/releases/download/2.11.2/run.sh |sudo tee /usr/local/bin/docker-compose
+        sudo chmod +x /usr/local/bin/docker-compose
+    fi
 
-    ln -s "$HOME/localdata/git" "$HOME/git"
+    [ ! -L "$HOME/localdata/git" ] && \
+        ln -s "$HOME/localdata/git" "$HOME/git"
+    [ ! -d "$HOME/git" ] && echo "TODO: $HOME/git doesn't exists"
 
-    echo "SSHD: disable root login & port 222"
+    USER_HOME="$HOME"
+    [ ! -L "$USER_HOME/localdata/dotfiles/ssmtp.conf" ] && \
+        sudo ln -s "$USER_HOME/localdata/dotfiles/ssmtp.conf" /etc/ssmtp/ssmtp.conf
+    [ ! -f "$HOME/localdata/dotfiles/ssmtp.conf" ] && \
+        echo "TODO: $HOME/localdata/dotfiles/ssmtp.conf doesn't exists"
+
+    echo "TODO: SSHD: disable root login & port 222"
 }
 
 macosPackages() {
