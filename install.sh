@@ -161,6 +161,13 @@ mainserver() {
     sudo apt install -y tmux vim rsync git
     sudo apt install -y lsb-release unzip rss2email ssmtp
 
+    sudo apt install -y unattended-upgrades apt-listchanges
+    sudo sed 's,^//Unattended-Upgrade::Mail,Unattended-Upgrade::Mail,' /etc/apt/apt.conf.d/50unattended-upgrades
+    sudo dpkg-reconfigure -plow unattended-upgrades
+
+    sudo apt install -y logcheck
+    sudo usermod -a -G logcheck volker
+
     # For docker
     sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
     curl -fsSL https://download.docker.com/linux/debian/gpg \
