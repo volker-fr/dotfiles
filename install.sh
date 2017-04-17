@@ -158,7 +158,7 @@ mainserver() {
         echo "Execute\n   newgrp sudo\nand reruncommand"
     fi
     sudo apt remove --purge -y rdnssd
-    sudo apt install -y tmux vim rsync git
+    sudo apt install -y tmux vim rsync git bc
     sudo apt install -y lsb-release unzip rss2email ssmtp
 
     sudo apt install -y unattended-upgrades apt-listchanges
