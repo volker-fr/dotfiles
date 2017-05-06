@@ -53,7 +53,12 @@ cfn-check(){
 chrome(){
     del_stopped chrome
 
+    if [ ! -f /tmp/.chrome.json ]; then
+        wget -q https://raw.githubusercontent.com/jfrazelle/dotfiles/master/etc/docker/seccomp/chrome.json -O /tmp/.chrome.json
+    fi
+
     docker run -d \
+        --net host \
         --memory 3gb \
         -v /etc/localtime:/etc/localtime:ro \
         -v /tmp/.X11-unix:/tmp/.X11-unix \
@@ -61,6 +66,7 @@ chrome(){
         -v "${HOME}/Downloads:/root/OutsideOfDocker" \
         -v "${HOME}/localdata/dotfiles/dot_chrome:/data" \
         -v /dev/shm:/dev/shm \
+        --hostname browser \
         --device /dev/snd \
         --device /dev/dri \
         --device /dev/video0 \
@@ -68,6 +74,7 @@ chrome(){
         --group-add audio \
         --group-add video \
         --name chrome \
+        --security-opt seccomp=/tmp/.chrome.json \
         jess/chrome --user-data-dir=/data \
         "$@"
 }
