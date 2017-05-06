@@ -100,7 +100,7 @@ disableLidCloseSleep() {
 
 ubuntuPackages() {
     sudo apt install -y encfs
-    sudo apt install -y iotop vim git redshift-gtk tmux keepass2
+    sudo apt install -y iotop vim git redshift-gtk tmux
     sudo apt install -y owncloud-client
 # i3
     echo "deb http://debian.sur5r.net/i3/ $(lsb_release -c -s) universe" |sudo tee /etc/apt/sources.list.d/i3wm.list
@@ -142,6 +142,31 @@ ubuntu() {
     sudo usermod -a -G docker volker
 }
 
+mainserver() {
+    su -c "apt install -y sudo"
+    su -c "usermod -a -G sudo volker"
+    newgrp sudo
+    sudo apt remove --purge -y rdnssd
+    sudo apt install -y tmux vim rsync git
+    sudo apt install -y lsb-release unzip rss2email
+
+    # For docker
+    sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
+    curl -fsSL https://download.docker.com/linux/debian/gpg \
+        | sudo apt-key add -
+    sudo add-apt-repository \
+       "deb [arch=amd64] https://download.docker.com/linux/debian \
+        $(lsb_release -cs) stable"
+    sudo apt update
+    sudo apt install -y docker-ce
+    sudo usermod -a -G docker volker
+
+    curl -L https://github.com/docker/compose/releases/download/2.11.2/run.sh |sudo tee /usr/local/bin/docker-compose
+    sudo chmod +x /usr/local/bin/docker-compose
+
+    echo "SSHD: disable root login & port 222"
+}
+
 macosPackages() {
     if [ ! -f '/usr/local/bin/brew' ]; then
         ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
@@ -162,6 +187,8 @@ macosPackages() {
     brew install bash-completion
     # vim code checker
     brew install jsonlint shellcheck flake8
+    # tmux workaround for open etc
+    brew install reattach-to-user-namespace
 
     brew install Caskroom/cask/iterm2
     brew install Caskroom/cask/docker
@@ -198,6 +225,9 @@ macos() {
     echo "========================================================="
     echo "= TODO: IN ITERM CHOOSE FONT 'Meslo LG M for Powerline' ="
     echo "========================================================="
+
+    # disable hibernation to disk. saves space.
+    pmset -a hibernatemode 0
 }
 
 usage() {
@@ -214,6 +244,10 @@ main() {
     fi
 
     case "$1" in
+        mainserver)
+            installDotfiles
+            mainserver
+            ;;
         ubuntu)
             installDotfiles
             ubuntu

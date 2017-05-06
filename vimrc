@@ -12,6 +12,7 @@ Plug 'tpope/vim-fugitive' " show git branch in status line & :Gblame
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'tpope/vim-endwise' " auto end, fi
+Plug 'vim-scripts/nginx.vim' " vim syntax hilightning
 call plug#end()
 
 "
@@ -36,6 +37,7 @@ set colorcolumn=80      " show 80 character limit
 set title               " set title/also show filename in iterm etc.
 set showcmd             " show command input as I type (right bottom)
 set cursorline          " show the line we are in
+set belloff=all         " disable all error bells
 
 "
 " Status line
@@ -62,9 +64,14 @@ set statusline+=[%P\ %l/%L\:\ %v\] " location in file
 "
 let mapleader='\'
 nmap <Leader>p :set paste!<CR>
+" enable the numbering
+nmap <Leader>n :setlocal relativenumber!<CR>
+" copy to clipboard
+nmap <Leader>c :%w !pbcopy<CR>
 
-"enable the numbering
-nmap <Leader>n :setlocal number!<CR>
+" jump between syntastic errors
+nmap ]n :lnext<CR>
+nmap [n :lprevious<CR>
 
 
 "
@@ -95,6 +102,9 @@ autocmd Filetype json :IndentGuidesEnable
 
 autocmd BufReadPost Jenkinsfile set syntax=groovy
 autocmd BufReadPost Jenkinsfile set filetype=groovy
+
+autocmd BufRead,BufNewFile */nginx.conf set filetype=nginx
+autocmd BufRead,BufNewFile */nginx/*/* set filetype=nginx
 
 "
 " airline
@@ -127,3 +137,11 @@ function s:new_vimwiki_diary_template()
   silent %substitute#%monthly%#
   execute "g/^%/d"
 endfunction
+
+" Syntastic
+let g:syntastic_python_flake8_args='--ignore=E501'
+" Allways populate :Errors right away. This will allow jumping between errors
+" with :lnext & :lprev
+let g:syntastic_always_populate_loc_list=1
+" check when opening a new file
+let g:syntastic_check_on_open = 1
