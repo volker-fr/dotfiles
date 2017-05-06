@@ -7,3 +7,4 @@ alias rm="rm -i"
 if [ "$(uname)" != 'Darwin' ]; then
     alias ps='ps -H'
 fi
+alias myip="dig +short myip.opendns.com @resolver1.opendns.com"
