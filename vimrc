@@ -37,7 +37,8 @@ set colorcolumn=80      " show 80 character limit
 set title               " set title/also show filename in iterm etc.
 set showcmd             " show command input as I type (right bottom)
 set cursorline          " show the line we are in
-set belloff=all         " disable all error bells
+"set belloff=all         " disable all error bells. Seem to required > v6
+set noerrorbells visualbell " old vim
 
 "
 " Status line
