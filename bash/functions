@@ -2,24 +2,24 @@
 
 # delete git branch
 deletebranch(){
-	echo git checkout $1
-	echo git pull
-	echo git checkout master
-	echo git pull
-	echo git branch -d $1
-	echo git push origin :$1
+    echo git checkout "$1"
+    echo git pull
+    echo git checkout master
+    echo git pull
+    echo git branch -d "$1"
+    echo git push origin ":$1"
 }
 
 
 encfs.pwd.sh() {
-	encfs $(pwd)/encrypted $(pwd)/decrypted
+    encfs "$(pwd)/encrypted" "$(pwd)/decrypted"
 }
 
 # generate random passwords
 genpasswd() {
-	local l=$1
-	[ "$l" = "" ] && l=32
-	tr -dc 'A-Za-z0-9!@#$%^&*_()-' < /dev/urandom | head -c ${l} | xargs
+    local l=$1
+    [ "$l" = "" ] && l=32
+    tr -dc 'A-Za-z0-9!@#$%^&*_()-' < /dev/urandom | head -c ${l} | xargs
 }
 
 # leo
@@ -37,8 +37,7 @@ leo() {
 
 # create new gitbranch
 newbranch(){
-	echo git checkout master
-	echo git pull
-	echo git checkout -b $1
-	echo git push -u origin $1
+    echo git pull
+    echo git checkout -b "$1"
+    echo git push -u origin "$1"
 }
