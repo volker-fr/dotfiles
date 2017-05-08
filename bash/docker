@@ -48,7 +48,7 @@ cfn-check(){
     fi
     docker run --rm -it \
         -v "$arg1" \
-        cfn-check "$@"
+        volkerfr/cfn-check "$@"
 }
 chrome(){
     del_stopped chrome
@@ -75,6 +75,11 @@ curl(){
     docker run --rm -it \
         --net host \
         jess/curl "$@"
+}
+diff-so-fancy(){
+    docker run --rm -it \
+        volker-fr/diff-so-fancy \
+        "$@"
 }
 exiftool(){
     #git clone git@github.com:Miljar/exiftool-docker.git && cd exiftool-docker && docker build -t exiftool .
@@ -170,6 +175,10 @@ libreoffice(){
             --name libreoffice \
             jess/libreoffice "$@"
 }
+ngrok(){
+    docker run --rm -it \
+        --link "$1":http wernight/ngrok ngrok http http:80
+}
 nmap(){
     docker run --rm -it \
         --net host \
@@ -254,7 +263,7 @@ x11vnc(){
         -v /tmp/.X11-unix:/tmp/.X11-unix \
         -v /etc/localtime:/etc/localtime:ro \
         --ipc=host \
-        x11vnc "$@"
+        volekrfr/x11vnc "$@"
 }
 w3m(){
     docker run --rm -it \
