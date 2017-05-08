@@ -30,6 +30,18 @@ _prompt_git_info() {
     echo " [${ref#refs/heads/}]"
 }
 
+# rbenv
+_prompt_rbenv() {
+  if which rbenv &> /dev/null; then
+    export PATH="$HOME/.rbenv/bin:$PATH"
+    rbenv=$(rbenv version-name) || return
+    $(rbenv commands | grep -q gemset) && gemset=$(rbenv gemset active 2> /dev/null) && rbenv="$rbenv@${gemset%% *}"
+    if [ "$rbenv" != "system" ]; then
+        echo -e "[ruby-${rbenv}]"
+    fi
+  fi
+}
+
 # Colors from https://github.com/jessfraz/dotfiles/blob/master/.bash_prompt
 # and added grey
 if tput setaf 1 &> /dev/null; then
@@ -68,6 +80,7 @@ else
 fi;
 
 PS1="${PROMPT_USER_HOST}"
+PS1+="\$(_prompt_rbenv)"
 PS1+="\[${blue}\]\$(_prompt_pwd)"
 PS1+="\[${grey}\]\$(_prompt_git_info)"
 PS1+="\[${red}\]\$(_prompt_git_status)"
