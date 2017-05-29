@@ -195,50 +195,69 @@ macosPackages() {
         ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     fi
 
-    brew install wget
-    brew install tmux
-    brew install coreutils
-    brew install findutils
-    brew install mplayer
-    brew install source-highlight
-    brew install awscli
-    brew install watch
-    brew install ffmpeg
-    brew install imagemagick
-    brew install jq
+    brew install \
+        wget \
+        tmux \
+        coreutils \
+        findutils \
+        mplayer \
+        source-highlight \
+        awscli \
+        watch \
+        ffmpeg \
+        imagemagick \
+        jq
     # tmux tabcompletion etc will fail without it
     brew install bash-completion
     # vim code checker
     brew install jsonlint shellcheck flake8
     # tmux workaround for open etc
     brew install reattach-to-user-namespace
+    # for vim-youcompleteme
+    brew install cmake go
 
-    brew install Caskroom/cask/iterm2
-    brew install Caskroom/cask/docker
-    brew install Caskroom/cask/firefox
-    brew install Caskroom/cask/thunderbird
-    brew install Caskroom/cask/flux
-    brew install Caskroom/cask/owncloud
-    brew install Caskroom/cask/hipchat
-    brew install Caskroom/cask/slack
-    brew install Caskroom/cask/menubar-countdown
-    brew install Caskroom/cask/google-chrome
-    brew install Caskroom/cask/libreoffice
-    brew install Caskroom/cask/flash-npapi
-    brew install Caskroom/cask/skype
-    brew install Caskroom/cask/joinme
-    brew install Caskroom/cask/amazon-workspaces
-    brew install Caskroom/cask/tigervnc-viewer
-    brew install Caskroom/cask/virtualbox Caskroom/cask/virtualbox-extension-pack
-    brew install Caskroom/cask/vagrant
-    brew install Caskroom/cask/tunnelblick
-    brew install Caskroom/cask/x-lite
-    brew install Caskroom/cask/yubikey-piv-manager
-    brew install Caskroom/cask/gnucash
+    brew install \
+        Caskroom/cask/iterm2 \
+        Caskroom/cask/docker \
+        Caskroom/cask/firefox \
+        Caskroom/cask/thunderbird \
+        Caskroom/cask/flux \
+        Caskroom/cask/owncloud \
+        Caskroom/cask/hipchat \
+        Caskroom/cask/slack \
+        Caskroom/cask/menubar-countdown \
+        Caskroom/cask/google-chrome \
+        Caskroom/cask/libreoffice \
+        Caskroom/cask/flash-npapi \
+        Caskroom/cask/skype \
+        Caskroom/cask/joinme \
+        Caskroom/cask/amazon-workspaces \
+        Caskroom/cask/tigervnc-viewer \
+        Caskroom/cask/virtualbox \
+        Caskroom/cask/virtualbox-extension-pack \
+        Caskroom/cask/vagrant \
+        Caskroom/cask/tunnelblick \
+        Caskroom/cask/yubikey-piv-manager \
+        Caskroom/cask/gnucash \
+        Caskroom/cask/time-out \
+        Caskroom/cask/quitter
+}
+
+macosLoginItems(){
+    # to automatically add login items
+    brew install OJFord/formulae/loginitems
+
+    loginitems -a Flux -s false
+    loginitems -a RescueTime -s false
+    loginitems -a owncloud -s false
+    loginitems -a Quitter -s false
+    loginitems -a "Time Out" -s false
+    loginitems -a "Menubar Countdown" -s false
 }
 
 macos() {
     macosPackages
+    macosLoginItems
 
     # font for vim-airline
     cd /tmp
