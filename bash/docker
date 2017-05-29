@@ -261,7 +261,7 @@ x11vnc(){
         -v /tmp/.X11-unix:/tmp/.X11-unix \
         -v /etc/localtime:/etc/localtime:ro \
         --ipc=host \
-        x11vnc "$@"
+        volkerfr/x11vnc "$@"
 }
 w3m(){
     docker run --rm -it \
