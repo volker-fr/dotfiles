@@ -74,7 +74,7 @@ chrome(){
         --group-add audio \
         --group-add video \
         --name chrome \
-        --security-opt seccomp=/tmp/.chrome.json \
+        --security-opt seccomp="/tmp/.chrome.json" \
         jess/chrome --user-data-dir=/data \
         "$@"
 }
@@ -90,13 +90,13 @@ diff-so-fancy(){
 }
 exiftool(){
     if [ -n "$1" ]; then
-        docker run -v "$PWD":/root/pub v4tech/exiftool exiftool "$@"
+        docker run --rm -v "$PWD":/root/pub v4tech/exiftool exiftool "$@"
     else
         echo "$0 <args> <filename>"
     fi
-    docker run -v "$PWD":/root/pub v4tech/exiftool exiftool "$@"
+    docker run --rm -v "$PWD":/root/pub v4tech/exiftool exiftool "$@"
 }
-firefox(){
+firefox-docker(){
     del_stopped firefox
 
     # check if firefox container is running
@@ -136,18 +136,15 @@ gcalcli(){
         --name gcalcli \
         jess/gcalcli "$@"
 }
-handbreak(){
-    del_stopped handbreak
-
-    docker run --rm -it \
-        --privileged \
+gimp(){
+    docker run -t --rm -d \
         -v /etc/localtime:/etc/localtime:ro \
         -v /tmp/.X11-unix:/tmp/.X11-unix \
-        -v /dev/sr0:/dev/sr0 \
-        -v /dev/cdrom:/dev/cdrom \
-        -v ~/localdata/dvd-rips:/rips \
-        --name handbrake \
-        marvambass/handbrake "$@"
+        -e DISPLAY="unix$DISPLAY" \
+        -v "$HOME/sync/gimp:/root/hostos" \
+        -v "$HOME/sync/gimp:/root/Pictures" \
+        --name gimp \
+        jess/gimp
 }
 htop(){
     docker run --rm -it \
@@ -156,7 +153,7 @@ htop(){
         --name htop \
         jess/htop
 }
-libreoffice(){
+libreoffice-docker(){
     del_stopped libreoffice
 
     if [ -f "$1" ]; then
@@ -194,6 +191,17 @@ oathtool(){
     docker run --rm -it \
          -v /etc/localtime:/etc/localtime \
         toolbelt/oathtool "$@"
+}
+pdflatex(){
+    if [ -n "$1" ]; then
+        docker run --rm -it \
+            --workdir="/root/pub" \
+            -v "$PWD":/root/pub \
+            aergus/latex \
+            pdflatex "$@"
+    else
+        echo "$0 <args> <filename>"
+    fi
 }
 plex(){
     del_stopped plex
@@ -256,6 +264,7 @@ vlc(){
         --group-add audio \
         --group-add video \
         -v "${HOME}/localdata/anschauen:/home/vlc/anschauen" \
+        --device=/dev/sr0 \
         --device /dev/dri \
         --name vlc \
         jess/vlc
