@@ -27,7 +27,7 @@ installDotfiles(){
 
     if [ "$(uname -s)" = "Linux" ]; then
         # only run these settings if X11 is installed/running
-        if pidof X > /dev/null; then
+        if pidof X > /dev/null || pidof Xorg; then
             # To open URL's in a docker container
             mkdir -p "$HOME/.local/share/applications"
             ln -sf "$repoDir/x11/browser.desktop" \
