@@ -27,7 +27,7 @@ installDotfiles(){
 
     if [ "$(uname -s)" = "Linux" ]; then
         # only run these settings if X11 is installed/running
-        if pidof X > /dev/null; then
+        if pidof X > /dev/null || pidof Xorg; then
             # To open URL's in a docker container
             mkdir -p "$HOME/.local/share/applications"
             ln -sf "$repoDir/x11/browser.desktop" \
@@ -93,9 +93,8 @@ installDotfiles(){
            "$HOME/.thunderbird"
 
     # local bashrc
-    test -f "$HOME/localdata/dotfiles/dot_bashrc.local" \
-        && ln -sf "$HOME/localdata/dotfiles/dot_bashrc.local" \
-           "$HOME/.bashrc.local"
+    touch "$HOME/localdata/dotfiles/dot_bashrc.local" \
+        && ln -sf "$HOME/localdata/dotfiles/dot_bashrc.local" "$HOME/.bashrc.local"
 }
 
 disableLidCloseSleep() {
@@ -109,19 +108,33 @@ ubuntuPackages() {
     sudo apt install -y encfs
     sudo apt install -y iotop vim git redshift-gtk tmux
     sudo apt install -y owncloud-client
-# i3
+    # i3
+    cd /tmp
+    /usr/lib/apt/apt-helper download-file http://debian.sur5r.net/i3/pool/main/s/sur5r-keyring/sur5r-keyring_2017.01.02_all.deb keyring.deb SHA256:4c3c6685b1181d83efe3a479c5ae38a2a44e23add55e16a328b8c8560bf05e5f
+    sudo dpkg -i ./keyring.deb
+
     echo "deb http://debian.sur5r.net/i3/ $(lsb_release -c -s) universe" |sudo tee /etc/apt/sources.list.d/i3wm.list
     sudo apt update
-    sudo apt --allow-unauthenticated install -y sur5r-keyring
+    sudo apt install -y sur5r-keyring
     sudo apt install -y i3
 
     # virtualbox
-    echo "deb http://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib non-free" |sudo tee /etc/apt/sources.list.d/virtualbox.list
-    wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo apt-key add -
-    sudo apt update
-    sudo apt install -y virtualbox-5.1
+    if ! lspci|grep VirtualBox > /dev/null; then
+        echo "deb http://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib non-free" |sudo tee /etc/apt/sources.list.d/virtualbox.list
+        wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo apt-key add -
+        sudo apt update
+        sudo apt install -y virtualbox-5.1
+    fi
 
-    sudo apt install -y docker rxvt-unicode-256color
+    # docker
+    sudo apt-get remove docker docker-engine docker.io
+    sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+    sudo apt update
+    sudo apt install -y docker-ce
+
+    sudo apt install -y rxvt-unicode-256color
 
     sudo apt install -y mplayer
     sudo apt install -y openssh-server
