@@ -39,6 +39,7 @@ set showcmd             " show command input as I type (right bottom)
 set cursorline          " show the line we are in
 "set belloff=all         " disable all error bells. Seem to required > v6
 set noerrorbells visualbell " old vim
+set shellcmdflag=-ic    " run interactive shell to make functions available
 
 "
 " Status line
@@ -146,3 +147,39 @@ let g:syntastic_python_flake8_args='--ignore=E501'
 let g:syntastic_always_populate_loc_list=1
 " check when opening a new file
 let g:syntastic_check_on_open = 1
+
+"
+" golang
+"
+" The go plugin take a lot of resources. Hilightning slows scrolling down
+" I only need the formating option
+let g:gofmt_command = "goimports"
+" copied from https://github.com/mrtazz/vimfiles/blob/master/vimrc
+function! s:GoFormat()
+    let view = winsaveview()
+    silent execute "%!" . g:gofmt_command
+    if v:shell_error
+        let errors = []
+        for line in getline(1, line('$'))
+            let tokens = matchlist(line, '^\(.\{-}\):\(\d\+\):\(\d\+\)\s*\(.*\)')
+            if !empty(tokens)
+                call add(errors, {"filename": @%,
+                                 \"lnum":     tokens[2],
+                                 \"col":      tokens[3],
+                                 \"text":     tokens[4]})
+            endif
+        endfor
+        if empty(errors)
+            % | " Couldn't detect gofmt error format, output errors
+        endif
+        undo
+        if !empty(errors)
+            call setqflist(errors, 'r')
+        endif
+        echohl Error | echomsg "Gofmt returned error" | echohl None
+    endif
+    call winrestview(view)
+endfunction
+command! Fmt call s:GoFormat()
+
+autocmd FileType go autocmd BufWritePre <buffer> Fmt
