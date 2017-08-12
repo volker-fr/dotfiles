@@ -102,6 +102,10 @@ autocmd Filetype json set ts=4 sw=4
 autocmd Filetype json let g:indentLine_setConceal = 0
 autocmd Filetype json :IndentGuidesEnable
 
+" Golang: don't show the tab symbol and gofmt will format in tab anyway
+autocmd Filetype go setlocal noexpandtab
+autocmd Filetype go setlocal nolist
+
 autocmd BufReadPost Jenkinsfile set syntax=groovy
 autocmd BufReadPost Jenkinsfile set filetype=groovy
 
@@ -151,6 +155,7 @@ let g:syntastic_check_on_open = 1
 "
 " golang
 "
+let g:syntastic_go_checkers = ['go', 'golint']
 " The go plugin take a lot of resources. Hilightning slows scrolling down
 " I only need the formating option
 let g:gofmt_command = "goimports"
