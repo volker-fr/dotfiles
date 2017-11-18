@@ -84,5 +84,6 @@ PS1+="\$(_prompt_rbenv)"
 PS1+="\[${blue}\]\$(_prompt_pwd)"
 PS1+="\[${grey}\]\$(_prompt_git_info)"
 PS1+="\[${red}\]\$(_prompt_git_status)"
-PS1+="\[${grey}\]\$ "
+PS1+="\[${grey}\]"
+PS1+="\$ "
 export PS1
