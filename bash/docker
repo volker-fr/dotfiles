@@ -63,7 +63,8 @@ chrome(){
         -v /etc/localtime:/etc/localtime:ro \
         -v /tmp/.X11-unix:/tmp/.X11-unix \
         -e "DISPLAY=unix${DISPLAY}" \
-        -v "${HOME}/Downloads:/root/OutsideOfDocker" \
+        -v "${HOME}/Downloads:/home/chrome/OutsideOfDocker" \
+        -v "${HOME}/Downloads:/home/chrome/Downloads" \
         -v "${HOME}/localdata/dotfiles/dot_chrome:/data" \
         -v /dev/shm:/dev/shm \
         --hostname browser \
@@ -137,7 +138,7 @@ gcalcli(){
         jess/gcalcli "$@"
 }
 gimp(){
-    docker run -t --rm -d \
+    docker run -t --rm -it \
         -v /etc/localtime:/etc/localtime:ro \
         -v /tmp/.X11-unix:/tmp/.X11-unix \
         -e DISPLAY="unix$DISPLAY" \
@@ -222,7 +223,7 @@ plex(){
 
     echo "$(ip route get 1 | awk '{print $NF;exit}'):32400/web"
 }
-slack(){
+slack-docker(){
     del_stopped slack
 
     docker run -d \
@@ -249,9 +250,10 @@ whois(){
     docker run --rm -it \
         airtonzanon/whois "$@"
 }
-vlc(){
+vlc-docker(){
     del_stopped vlc
 
+    #    --device=/dev/sr0 \
     docker run -d \
         -v /etc/localtime:/etc/localtime:ro \
         -v /tmp/.X11-unix:/tmp/.X11-unix \
@@ -264,7 +266,6 @@ vlc(){
         --group-add audio \
         --group-add video \
         -v "${HOME}/localdata/anschauen:/home/vlc/anschauen" \
-        --device=/dev/sr0 \
         --device /dev/dri \
         --name vlc \
         jess/vlc
