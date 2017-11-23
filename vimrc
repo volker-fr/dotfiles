@@ -13,6 +13,8 @@ Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'tpope/vim-endwise' " auto end, fi
 Plug 'vim-scripts/nginx.vim' " vim syntax hilightning
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'pearofducks/ansible-vim'
 call plug#end()
 
 "
@@ -75,6 +77,9 @@ nmap <Leader>c :%w !pbcopy<CR>
 nmap ]n :lnext<CR>
 nmap [n :lprevious<CR>
 
+" change tabs
+map <c-l> :tabn<CR>
+map <c-j> :tabp<CR>
 
 "
 " presentation, highlighting etc
@@ -111,6 +116,8 @@ autocmd BufReadPost Jenkinsfile set filetype=groovy
 
 autocmd BufRead,BufNewFile */nginx.conf set filetype=nginx
 autocmd BufRead,BufNewFile */nginx/*/* set filetype=nginx
+
+autocmd BufRead,BufNewFile */playbooks/*.yml set filetype=ansible
 
 "
 " airline
@@ -188,3 +195,9 @@ endfunction
 command! Fmt call s:GoFormat()
 
 autocmd FileType go autocmd BufWritePre <buffer> Fmt
+
+" Open new files in a new tab in CtrlP
+let g:ctrlp_prompt_mappings = {
+    \ 'AcceptSelection("e")': ['<c-t>'],
+    \ 'AcceptSelection("t")': ['<cr>', '<2-LeftMouse>'],
+    \ }
