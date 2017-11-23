@@ -158,8 +158,16 @@ mainserver() {
         echo "Execute\n   newgrp sudo\nand reruncommand"
     fi
     sudo apt remove --purge -y rdnssd
-    sudo apt install -y tmux vim rsync git
+    sudo apt install -y tmux vim rsync git bc
     sudo apt install -y lsb-release unzip rss2email ssmtp
+
+    sudo apt install -y unattended-upgrades apt-listchanges
+    sudo sed -i 's,^//Unattended-Upgrade::Mail,Unattended-Upgrade::Mail,' /etc/apt/apt.conf.d/50unattended-upgrades
+    sudo sed -i 's,^Unattended-Upgrade::MailOnlyOnError,//Unattended-Upgrade::MailOnlyOnError,' /etc/apt/apt.conf.d/50unattended-upgrades
+    sudo dpkg-reconfigure -plow unattended-upgrades
+
+    sudo apt install -y logcheck
+    sudo usermod -a -G logcheck volker
 
     # For docker
     sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
