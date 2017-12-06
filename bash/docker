@@ -241,6 +241,11 @@ slack-docker(){
         --name slack \
         jess/slack "$@"
 }
+tldr(){
+    docker run --rm -it \
+        s3than/tldr \
+        --theme original "$@"
+}
 traceroute(){
     docker run --rm -it \
         --net host \
