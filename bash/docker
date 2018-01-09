@@ -80,8 +80,11 @@ chrome(){
         "$@"
 }
 curl(){
+    # /var/folders is macos temp
     docker run --rm -it \
         --net host \
+        -v "$HOME:$HOME" \
+        -v "/var/folders:/var/folders" \
         jess/curl "$@"
 }
 # Torrent client
