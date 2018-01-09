@@ -42,6 +42,9 @@ set cursorline          " show the line we are in
 "set belloff=all         " disable all error bells. Seem to required > v6
 set noerrorbells visualbell " old vim
 set shellcmdflag=-ic    " run interactive shell to make functions available
+" To download missing languages: set spelllang=de
+set spelllang=en,de
+set spell
 
 "
 " Status line
