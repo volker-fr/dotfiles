@@ -276,9 +276,15 @@ macosLoginItems(){
     loginitems -a "Menubar Countdown" -s false
 }
 
+macosConfig(){
+    # save screenshots as jpg not png
+    defaults write com.apple.screencapture type jpg && killall SystemUIServer
+}
+
 macos() {
     macosPackages
     macosLoginItems
+    macosConfig
 
     # font for vim-airline
     cd /tmp
