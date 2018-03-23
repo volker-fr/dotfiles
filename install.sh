@@ -240,27 +240,24 @@ macosPackages() {
     brew install \
         Caskroom/cask/iterm2 \
         Caskroom/cask/docker \
+        Caskroom/cask/dropbox \
         Caskroom/cask/firefox \
         Caskroom/cask/thunderbird \
         Caskroom/cask/flux \
         Caskroom/cask/owncloud \
-        Caskroom/cask/hipchat \
         Caskroom/cask/slack \
         Caskroom/cask/menubar-countdown \
         Caskroom/cask/google-chrome \
         Caskroom/cask/libreoffice \
         Caskroom/cask/flash-npapi \
         Caskroom/cask/skype \
-        Caskroom/cask/joinme \
-        Caskroom/cask/amazon-workspaces \
         Caskroom/cask/tigervnc-viewer \
         Caskroom/cask/virtualbox \
         Caskroom/cask/virtualbox-extension-pack \
         Caskroom/cask/vagrant \
-        Caskroom/cask/tunnelblick \
         Caskroom/cask/yubikey-piv-manager \
-        Caskroom/cask/gnucash \
         Caskroom/cask/time-out \
+        Caskroom/cask/private-internet-access \
         Caskroom/cask/quitter
 }
 
