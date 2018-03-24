@@ -237,6 +237,7 @@ plex(){
         linuxserver/plex
 
     echo "$(ip route get 1 | awk '{print $NF;exit}'):32400/web"
+    echo "$(ip route get 1 | awk '{print $NF;exit}'):33400/web for WebTools"
 }
 rtorrent(){
     del_stopped rtorrentvpn
