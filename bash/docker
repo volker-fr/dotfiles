@@ -113,7 +113,7 @@ exiftool(){
     fi
     docker run --rm -v "$PWD":/root/pub v4tech/exiftool exiftool "$@"
 }
-firefox-docker(){
+firefox(){
     del_stopped firefox
 
     # check if firefox container is running
@@ -237,7 +237,7 @@ plex(){
         linuxserver/plex
 
     echo "$(ip route get 1 | awk '{print $NF;exit}'):32400/web"
-    echo "$(ip route get 1 | awk '{print $NF;exit}'):33400/web for WebTools"
+    echo "$(ip route get 1 | awk '{print $NF;exit}'):33400/web"
 }
 rtorrent(){
     del_stopped rtorrentvpn
@@ -269,7 +269,7 @@ rtorrent(){
         -e PGID="$(id -g)" \
         binhex/arch-rtorrentvpn
 }
-slack-docker(){
+slack(){
     del_stopped slack
 
     docker run -d \
@@ -282,10 +282,33 @@ slack-docker(){
         --device /dev/video0 \
         --group-add audio \
         --group-add video \
+        -v "${HOME}/localdata/bin/x-www-forwarder-client-0.0.1:/usr/bin/x-www-browser:ro" \
+        -v "${HOME}/.x-www-forwarder.sock:/var/run/browser.sock" \
         -v "${HOME}/localdata/dotfiles/dot_Slack:/root/.config/Slack" \
         -v "${HOME}/Downloads:/root/OutsideOfDocker" \
         --name slack \
         jess/slack "$@"
+}
+thunderbird(){
+    del_stopped thunderbird
+
+    docker run -d \
+        --memory 500mb \
+        --net host \
+        --cpuset-cpus 0 \
+        -v /etc/localtime:/etc/localtime:ro \
+        -v /tmp/.X11-unix:/tmp/.X11-unix \
+        -e "DISPLAY=unix${DISPLAY}" \
+        -e UID=${UID} \
+        -e GID=${UID} \
+        -v "${HOME}/localdata/bin/x-www-forwarder-client-0.0.1:/usr/bin/x-www-browser:ro" \
+        -v "${HOME}/.x-www-forwarder.sock:/var/run/browser.sock" \
+        -v "${HOME}/localdata/dotfiles/thunderbird/dot_thunderbird:/home/svc/.thunderbird" \
+        -v "${HOME}/localdata/dotfiles/thunderbird/dot_mozilla:/home/svc/.mozilla" \
+        -v "${HOME}/Downloads:/root/OutsideOfDocker" \
+        -v "${HOME}/Downloads:/root/Downloads" \
+        --name thunderbird \
+        simbelmas/thunderbird "$@"
 }
 tldr(){
     docker run --rm -it \
