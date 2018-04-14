@@ -121,10 +121,12 @@ firefox(){
     if [[ "$firefox_state" == "true" ]]; then
         docker exec -i firefox /usr/bin/firefox "$@" 2>/dev/null
     else
+        # --ipc=host: Else the browser might crash on some websites
         docker -D run -d \
             --memory 2gb \
             --net host \
             --cpuset-cpus 0 \
+            --ipc="host" \
             -v /etc/localtime:/etc/localtime:ro \
             -v /tmp/.X11-unix:/tmp/.X11-unix \
             -v "${HOME}/Downloads:/root/OutsideOfDocker" \
