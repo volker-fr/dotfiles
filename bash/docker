@@ -57,6 +57,13 @@ chrome(){
         wget -q https://raw.githubusercontent.com/jfrazelle/dotfiles/master/etc/docker/seccomp/chrome.json -O /tmp/.chrome.json
     fi
 
+    # Backup script breaks permissions
+    dotfile_dir="${HOME}/localdata/dotfiles/google-chrome"
+    find "$dotfile_dir" -type d -exec chmod 770 {} \;
+    find "$dotfile_dir" -type f -exec chmod 660 {} \;
+    chown -R "$(id -u):999" "$dotfile_dir"
+    echo "FINISHED"
+
     docker run -d \
         --net host \
         --memory 3gb \
@@ -65,7 +72,7 @@ chrome(){
         -e "DISPLAY=unix${DISPLAY}" \
         -v "${HOME}/Downloads:/home/chrome/OutsideOfDocker" \
         -v "${HOME}/Downloads:/home/chrome/Downloads" \
-        -v "${HOME}/localdata/dotfiles/dot_chrome:/data" \
+        -v "${dotfile_dir}:/data" \
         -v /dev/shm:/dev/shm \
         --hostname browser \
         --device /dev/snd \
@@ -210,6 +217,15 @@ oathtool(){
     docker run --rm -it \
          -v /etc/localtime:/etc/localtime \
         toolbelt/oathtool "$@"
+}
+otrdecoder(){
+    # contains the secrets
+    docker run --rm -it \
+        -e "otrEmail=${otrusername}" \
+        -e "otrPassword=${otrpassword}" \
+        -e "convert=false" \
+        -v "$HOME/Downloads:/otr" \
+        develcab/otr
 }
 pdflatex(){
     if [ -n "$1" ]; then
