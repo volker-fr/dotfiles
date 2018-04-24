@@ -39,9 +39,11 @@ set colorcolumn=80      " show 80 character limit
 set title               " set title/also show filename in iterm etc.
 set showcmd             " show command input as I type (right bottom)
 set cursorline          " show the line we are in
-"set belloff=all         " disable all error bells. Seem to required > v6
+"set belloff=all        " disable all error bells. Seem to required > v6
 set noerrorbells visualbell " old vim
-set shellcmdflag=-ic    " run interactive shell to make functions available
+if &diff == 'nodiff'    " don't run it when using vim diff, else vim crashes
+    set shellcmdflag=-ic    " run interactive shell to make functions available
+endif
 " To download missing languages: set spelllang=de
 set spelllang=en,de
 set spell
