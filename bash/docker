@@ -59,10 +59,17 @@ chrome(){
 
     # Backup script breaks permissions
     dotfile_dir="${HOME}/localdata/dotfiles/google-chrome"
-    find "$dotfile_dir" -type d -exec chmod 770 {} \;
-    find "$dotfile_dir" -type f -exec chmod 660 {} \;
-    chown -R "$(id -u):999" "$dotfile_dir"
-    echo "FINISHED"
+    if ! docker ps|grep chrome > /dev/null; then
+        find "$dotfile_dir" \
+            \( -type d -a -user "$USER" -a ! -perm 770 \) \
+            -exec chmod 770 {} \;
+        find "$dotfile_dir" \
+            \( -type f -a -user "$USER" -a ! -perm 660 \) \
+            -exec chmod 660 {} \;
+        find "$dotfile_dir" \
+            \( -user "$USER" -a ! -gid 999 \) \
+            -exec chown "$(id -u):999" {} \;
+    fi
 
     docker run -d \
         --net host \
@@ -302,7 +309,7 @@ slack(){
         --group-add video \
         -v "${HOME}/localdata/bin/x-www-forwarder-client-0.0.1:/usr/bin/x-www-browser:ro" \
         -v "${HOME}/.x-www-forwarder.sock:/var/run/browser.sock" \
-        -v "${HOME}/localdata/dotfiles/dot_Slack:/root/.config/Slack" \
+        -v "${HOME}/localdata/dotfiles/slack:/root/.config/Slack" \
         -v "${HOME}/Downloads:/root/OutsideOfDocker" \
         --name slack \
         jess/slack "$@"
