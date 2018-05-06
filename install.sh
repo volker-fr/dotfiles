@@ -48,20 +48,10 @@ installDotfiles(){
             xdg-user-dirs-update --set PICTURES "$HOME"
             xdg-user-dirs-update --set VIDEOS "$HOME"
         fi
-
-        # don't backup vagrant
-        mkdir -p "$HOME/no-backup/dotfiles"
-        if [ -e "$HOME/.vagrant.d" ] && [ ! -L "$HOME/.vagrant.d" ]; then
-            echo "$HOME/.vagrant.d exists but is not a link"
-            echo "consider moving it to ~/no-backup/dotfiles/dot_vagrant.d"
-            exit 1
-        fi
-        test -d "$HOME/no-backup/dotfiles/dot_vagrant.d" \
-            && ln -sfn "$HOME/no-backup/dotfiles/dot_vagrant.d" "$HOME/.vagrant.d"
     fi
 
     # link ssh to localdata directory
-    dotSSH="$HOME/localdata/dotfiles/dot_ssh"
+    dotSSH="$HOME/localdata/dotfiles/ssh"
     mkdir -p "$dotSSH" && chmod 700 "$dotSSH"
     if [ -e "$HOME/.ssh" ] && [ ! -L "$HOME/.ssh" ]; then
         echo "$HOME/.ssh exists but isn't a link"
@@ -81,20 +71,9 @@ installDotfiles(){
     wget -q -O "$HOME/.vim/autoload/plug.vim" \
         https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
-    # Thunderbird
-    mkdir -p "$HOME/localdata/dotfiles"
-    if [ -e "$HOME/.thunderbird" ] && [ ! -L "$HOME/.thunderbird" ]; then
-        echo "$HOME/.thunderbird exists but is not a link"
-        echo "consider moving it to $HOME/localdata/dotfiles/dot_thunderbird"
-        exit 1
-    fi
-    test -d "$HOME/localdata/dotfiles/dot_thunderbird" \
-        && ln -sfn "$HOME/localdata/dotfiles/dot_thunderbird" \
-           "$HOME/.thunderbird"
-
     # local bashrc
-    touch "$HOME/localdata/dotfiles/dot_bashrc.local" \
-        && ln -sf "$HOME/localdata/dotfiles/dot_bashrc.local" "$HOME/.bashrc.local"
+    touch "$HOME/localdata/dotfiles/bashrc.local" \
+        && ln -sf "$HOME/localdata/dotfiles/bashrc.local" "$HOME/.bashrc.local"
 }
 
 disableLidCloseSleep() {
