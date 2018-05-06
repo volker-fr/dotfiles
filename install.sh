@@ -86,7 +86,7 @@ disableLidCloseSleep() {
 ubuntuPackages() {
     sudo apt install -y encfs
     sudo apt install -y iotop vim git redshift-gtk tmux
-    sudo apt install -y owncloud-client
+    sudo apt install -y nexctloud-client
     # i3
     cd /tmp
     /usr/lib/apt/apt-helper download-file http://debian.sur5r.net/i3/pool/main/s/sur5r-keyring/sur5r-keyring_2017.01.02_all.deb keyring.deb SHA256:4c3c6685b1181d83efe3a479c5ae38a2a44e23add55e16a328b8c8560bf05e5f
@@ -223,7 +223,7 @@ macosPackages() {
         Caskroom/cask/firefox \
         Caskroom/cask/thunderbird \
         Caskroom/cask/flux \
-        Caskroom/cask/owncloud \
+        Caskroom/cask/nextcloud \
         Caskroom/cask/slack \
         Caskroom/cask/menubar-countdown \
         Caskroom/cask/google-chrome \
@@ -246,7 +246,7 @@ macosLoginItems(){
 
     loginitems -a Flux -s false
     loginitems -a RescueTime -s false
-    loginitems -a owncloud -s false
+    loginitems -a nextcloud -s false
     loginitems -a Quitter -s false
     loginitems -a "Time Out" -s false
     loginitems -a "Menubar Countdown" -s false
