@@ -57,8 +57,8 @@ for configFile in ~/.bash/*; do
     source "$configFile"
 done
 # shellcheck source=/dev/null
-[ -f ~/localdata/dotfiles/dot_bashrc.local ] && \
-    source  ~/localdata/dotfiles/dot_bashrc.local
+[ -f ~/localdata/dotfiles/bashrc.local ] && \
+    source  ~/localdata/dotfiles/bashrc.local
 
 # enable color support of ls and also add handy aliases
 if which dircolors > /dev/null; then
