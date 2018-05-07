@@ -148,7 +148,7 @@ if has("autocmd")
 endif
 
 function s:new_vimwiki_diary_template()
-  " diary tempalte + execute substitution in it
+  " diary template + execute substitution in it
   read ~/repos/vimwiki/templates/diary.tpl | execute "normal ggdd"
   " execute VIM_EVAL tag
   %substitute#\[:VIM_EVAL:\]\(.\{-\}\)\[:END_EVAL:\]#\=eval(submatch(1))#ge
