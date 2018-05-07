@@ -16,7 +16,8 @@ function marks {
 ## add to bash. See blog for zsh
 _completemarks() {
   local curw=${COMP_WORDS[COMP_CWORD]}
-  local wordlist=$(find $MARKPATH -type l -printf "%f\n")
+  #local wordlist=$(find $MARKPATH -type l -printf "%f\n")
+  local wordlist=$(find $MARKPATH -type l -print0|xargs -0 basename -a)
   COMPREPLY=($(compgen -W '${wordlist[@]}' -- "$curw"))
   return 0
 }
