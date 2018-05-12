@@ -127,6 +127,14 @@ exiftool(){
     fi
     docker run --rm -v "$PWD":/root/pub v4tech/exiftool exiftool "$@"
 }
+fdupes(){
+    # easiest is "fdupes -r $(pwd)"
+    docker run -i -t --rm \
+        -v "$(pwd):$(pwd):ro" \
+        --entrypoint /usr/bin/fdupes \
+        meedan/fdupes \
+        "$@"
+}
 firefox(){
     del_stopped firefox
 
