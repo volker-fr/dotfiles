@@ -237,7 +237,8 @@ macosPackages() {
         Caskroom/cask/yubikey-piv-manager \
         Caskroom/cask/time-out \
         Caskroom/cask/private-internet-access \
-        Caskroom/cask/quitter
+        Caskroom/cask/quitter \
+        Caskroom/cask/etrecheck
 }
 
 macosLoginItems(){
