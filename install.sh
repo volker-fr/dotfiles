@@ -276,6 +276,8 @@ macos() {
 
     # disable hibernation to disk. saves space.
     sudo pmset -a hibernatemode 0
+
+    echo "Run: https://github.com/kristovatlas/osx-config-check"
 }
 
 usage() {

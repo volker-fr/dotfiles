@@ -93,7 +93,7 @@ chrome(){
         jess/chrome --user-data-dir=/data \
         "$@"
 }
-curl(){
+curl-docker(){
     # /var/folders is macos temp
     docker run --rm -it \
         --net host \
@@ -274,9 +274,9 @@ plex(){
 }
 rtorrent(){
     del_stopped rtorrentvpn
-    #docker run -d \
-        #--cap-add=NET_ADMIN \
-    docker run -it \
+    #    -e LAN_NETWORK="127.0.0.1/32" \
+    docker run -d \
+        --cap-add=NET_ADMIN \
         -p 9080:9080 \
         -p 9443:9443 \
         -p 8118:8118 \
@@ -284,7 +284,6 @@ rtorrent(){
         --name=rtorrentvpn \
         -v ~/localdata/rtorrent-data:/data \
         -v ~/localdata/dotfiles/rtorrent/config:/config \
-        -v /etc/localtime:/etc/localtime:ro \
         -e VPN_ENABLED=yes \
         -e VPN_USER="$PIA_USERNAME" \
         -e VPN_PASS="$PIA_PASSWORD" \
@@ -293,7 +292,7 @@ rtorrent(){
         -e ENABLE_PRIVOXY=yes \
         -e ENABLE_FLOOD=yes \
         -e ENABLE_AUTODL_IRSSI=no \
-        -e LAN_NETWORK="127.0.0.1/32" \
+        -e LAN_NETWORK="172.17.0.0/16" \
         -e NAME_SERVERS=8.8.8.8,8.8.4.4 \
         -e DEBUG=false \
         -e PHP_TZ=UTC \
@@ -301,6 +300,11 @@ rtorrent(){
         -e PUID="$(id -u)" \
         -e PGID="$(id -g)" \
         binhex/arch-rtorrentvpn
+        echo "https://www.privateinternetaccess.com/openvpn/openvpn.zip"
+        echo "Download & copy to ~/localdata/dotfiles/rtorrent/config/openvpn"
+        echo "docker exec -it rtorrentvpn dig +short myip.opendns.com @resolver1.opendns.com"
+        echo "http://127.0.0.1:9080/ - admin:rutorrent"
+        echo "http://127.0.0.1:3000/ - admin:rutorrent"
 }
 slack(){
     del_stopped slack
