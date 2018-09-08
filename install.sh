@@ -278,11 +278,45 @@ macos() {
     sudo pmset -a hibernatemode 0
 }
 
+xubuntu() {
+    sudo apt install -y i3 \
+                        rxvt-unicode-256color \
+                        openssh-server \
+                        vim \
+                        encfs \
+                        tmux \
+                        virtualbox \
+                        virtualbox-guest-additions-iso \
+                        virtualbox-ext-pack \
+                        mplayer \
+                        redshift-gtk \
+                        gparted \
+                        iotop
+
+    # docker
+    sudo apt-get remove docker docker-engine docker.io
+    sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+    sudo apt update
+    sudo apt install -y docker-ce
+    sudo usermod -a -G docker volker
+
+    # Virtualbox
+    sudo usermod -a -G vboxusers volker
+
+    # nextcloud
+    sudo add-apt-repository ppa:nextcloud-devs/client
+    sudo apt-get update
+    sudo apt-get install -y nextcloud-client
+}
+
 usage() {
     echo "$0 <argument>:"
     echo "   $0 mainserver"
     echo "   $0 ubuntu"
     echo "   $0 macos"
+    echo "   $0 xubuntu"
     echo "   $0 dotfiles"
 }
 
@@ -300,6 +334,12 @@ main() {
         ubuntu)
             installDotfiles
             ubuntu
+            ;;
+        xubuntu)
+            # xubuntu-minimal installation
+            installDotfiles
+            disableLidCloseSleep
+            xubuntu
             ;;
         "macos")
             installDotfiles
