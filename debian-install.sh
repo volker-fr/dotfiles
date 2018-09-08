@@ -47,7 +47,9 @@ general_packages() {
         encfs \
         rsync \
         git \
-        wget
+        wget \
+        bc \
+        strace
 }
 
 systemspecific_packages() {
@@ -62,10 +64,36 @@ group_permissions() {
     usermod -a -G sudo,docker,netdev volker
 }
 
+lightdm_autologin() {
+    sed -i 's/#autologin-user=/autologin-user=volker/' /etc/lightdm/lightdm.conf
+}
+
+nextcloud() {
+    echo 'deb http://download.opensuse.org/repositories/home:/ivaradi/Debian_9.0_update/ /' \
+        > /etc/apt/sources.list.d/nextcloud-client.list
+    wget http://download.opensuse.org/repositories/home:/ivaradi/Debian_9.0_update/Release.key \
+        -O /tmp/Release.key
+    apt-key add - < /tmp/Release.key
+    apt update
+    apt install \
+        --no-install-recommends \
+        -y \
+        nextcloud-client
+}
+
+disableLidCloseSleep() {
+    if ! grep -q "^HandleLidSwitch" /etc/systemd/logind.conf; then
+        echo "HandleLidSwitch=ignore" |sudo tee -a /etc/systemd/logind.conf > /dev/null
+        sudo service systemd-logind restart
+    fi
+}
+
 
 main_packages
 repos
 general_packages
 systemspecific_packages
 group_permissions
-
+lightdm_autologin
+nextcloud
+disableLidCloseSleep
