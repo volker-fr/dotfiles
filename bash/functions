@@ -11,8 +11,12 @@ deletebranch(){
 }
 
 
-encfs.pwd.sh() {
+encfs-pwd() {
     encfs "$(pwd)/encrypted" "$(pwd)/decrypted"
+}
+# docker can't mount fuse systems
+encfs-pwd-root() {
+    encfs -o allow_root "$(pwd)/encrypted" "$(pwd)/decrypted"
 }
 
 # generate random passwords
