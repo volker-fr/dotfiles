@@ -57,29 +57,15 @@ chrome(){
         wget -q https://raw.githubusercontent.com/jfrazelle/dotfiles/master/etc/docker/seccomp/chrome.json -O /tmp/.chrome.json
     fi
 
-    # Backup script breaks permissions
-    dotfile_dir="${HOME}/localdata/dotfiles/google-chrome"
-    if ! docker ps|grep chrome > /dev/null; then
-        find "$dotfile_dir" \
-            \( -type d -a -user "$USER" -a ! -perm 770 \) \
-            -exec chmod 770 {} \;
-        find "$dotfile_dir" \
-            \( -type f -a -user "$USER" -a ! -perm 660 \) \
-            -exec chmod 660 {} \;
-        find "$dotfile_dir" \
-            \( -user "$USER" -a ! -gid 999 \) \
-            -exec chown "$(id -u):999" {} \;
-    fi
-
     docker run -d \
         --net host \
         --memory 3gb \
         -v /etc/localtime:/etc/localtime:ro \
         -v /tmp/.X11-unix:/tmp/.X11-unix \
         -e "DISPLAY=unix${DISPLAY}" \
-        -v "${HOME}/Downloads:/home/chrome/OutsideOfDocker" \
-        -v "${HOME}/Downloads:/home/chrome/Downloads" \
-        -v "${dotfile_dir}:/data" \
+        -v "${HOME}/Downloads:/OutsideOfDocker" \
+        -v "${HOME}/Downloads:/Downloads" \
+        -v "$HOME/localdata/dotfiles/google-chrome:/data" \
         -v /dev/shm:/dev/shm \
         --hostname browser \
         --device /dev/snd \
@@ -88,18 +74,12 @@ chrome(){
         --device /dev/bus/usb \
         --group-add audio \
         --group-add video \
+        --user="$(id -u):$(id -g)" \
+        --cap-add SYS_ADMIN \
         --name chrome \
         --security-opt seccomp="/tmp/.chrome.json" \
         jess/chrome --user-data-dir=/data \
         "$@"
-}
-curl(){
-    # /var/folders is macos temp
-    docker run --rm -it \
-        --net host \
-        -v "$HOME:$HOME" \
-        -v "/var/folders:/var/folders" \
-        jess/curl "$@"
 }
 # Torrent client
 deluge(){
@@ -118,6 +98,51 @@ diff-so-fancy(){
     docker run --rm -it \
         volker-fr/diff-so-fancy \
         "$@"
+}
+dropbox(){
+    del_stopped dropbox
+
+    # check if firefox container is running
+    dropbox_state=$(docker inspect --format "{{.State.Running}}" dropbox 2>/dev/null)
+    if [[ "$dropbox_state" == "true" ]]; then
+        docker exec -it dropbox dropbox "$@"
+    else
+        docker run -d \
+            --restart=always \
+            --name=dropbox \
+            -e DBOX_UID="$(id -u "$USER")" \
+            -e DBOX_GID="$(id -g "$USER")" \
+            -v "$HOME/Dropbox:/dbox/Dropbox" \
+            -v "$HOME/localdata/dotfiles/dropbox:/dbox/.dropbox" \
+            janeczku/dropbox \
+        && sleep 15 \
+        && docker logs dropbox
+    fi
+}
+evince(){
+    del_stopped evince
+
+    if [ -f "$1" ]; then
+        localdir=$(dirname $(readlink -f "$1"|uniq))
+        echo "Mapping folder $localdir to the same location in docker"
+        # for i3 d3menu hack execution...
+        arg1="-v"
+        arg2="$(readlink -f "$1"):/$1"
+    else
+        arg1=""
+        arg2=""
+    fi
+
+    docker run -d \
+            -v /etc/localtime:/etc/localtime:ro \
+            -v /tmp/.X11-unix:/tmp/.X11-unix \
+            -e "DISPLAY=unix${DISPLAY}" \
+            $arg1 "$arg2" \
+            -e GDK_SCALE \
+            -e GDK_DPI_SCALE \
+            --name evince \
+            --entrypoint /usr/bin/evince \
+            jess/evince "$@"
 }
 exiftool(){
     if [ -n "$1" ]; then
@@ -144,20 +169,24 @@ firefox(){
         docker exec -i firefox /usr/bin/firefox "$@" 2>/dev/null
     else
         # --ipc=host: Else the browser might crash on some websites
+            #--net host \
+        #    --link pulseaudio-docker:pulseaudio-docker \
         docker -D run -d \
             --memory 2gb \
-            --net host \
             --cpuset-cpus 0 \
             --ipc="host" \
+            --user="$(id -u):$(id -g)" \
             -v /etc/localtime:/etc/localtime:ro \
             -v /tmp/.X11-unix:/tmp/.X11-unix \
+            -v "$XDG_RUNTIME_DIR:$XDG_RUNTIME_DIR" \
             -v "${HOME}/Downloads:/root/OutsideOfDocker" \
             -v "${HOME}/Downloads:/root/Downloads" \
-            -v "${HOME}/localdata/dotfiles/firefox/dot_mozilla:/root/.mozilla" \
-            -v "${HOME}/localdata/dotfiles/firefox/dot_cache/mozilla:/root/.cache/mozilla" \
+            -v "${HOME}/localdata/dotfiles/firefox/dot_mozilla:/.mozilla" \
+            -v "${HOME}/localdata/dotfiles/firefox/dot_cache:/.cache" \
             -e "DISPLAY=unix${DISPLAY}" \
             -e GDK_SCALE \
             -e GDK_DPI_SCALE \
+            -e XDG_RUNTIME_DIR \
             --device /dev/snd \
             --device /dev/dri \
             --name firefox \
@@ -263,14 +292,14 @@ plex(){
         -e PUID="$(id -u "$USER")" \
         -e PGID="$(id -g "$USER")" \
         -e TZ="$(cat /etc/timezone)" \
-        -e PLEX_ALLOWED_NETWORKS="192.168.0.0/16" \
+        -e PLEX_ALLOWED_NETWORKS="192.168.0.0/16,172.16.0.0/12" \
         -v "${HOME}/localdata/dotfiles/plex/config:/config" \
         -v "${HOME}/localdata/anschauen:/data:ro" \
         -v "${HOME}/localdata/dotfiles/plex/transcode:/transcode" \
         linuxserver/plex
 
-    echo "$(ip route get 1 | awk '{print $NF;exit}'):32400/web"
-    echo "$(ip route get 1 | awk '{print $NF;exit}'):33400/"
+    echo "$(ip route get 1 | awk '{print $7}'):32400/web"
+    echo "$(ip route get 1 | awk '{print $7}'):33400/"
 }
 rtorrent(){
     del_stopped rtorrentvpn
