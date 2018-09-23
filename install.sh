@@ -109,8 +109,7 @@ ubuntuPackages() {
     sudo apt-get remove docker docker-engine docker.io
     sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-    sudo apt update
+    sudo add-apt-repository -u "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
     sudo apt install -y docker-ce
 
     sudo apt install -y rxvt-unicode-256color
@@ -165,10 +164,9 @@ mainserver() {
     sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
     curl -fsSL https://download.docker.com/linux/debian/gpg \
         | sudo apt-key add -
-    sudo add-apt-repository \
+    sudo add-apt-repository -u \
        "deb [arch=amd64] https://download.docker.com/linux/debian \
         $(lsb_release -cs) stable"
-    sudo apt update
     sudo apt install -y docker-ce
     sudo usermod -a -G docker volker
 
@@ -299,8 +297,7 @@ xubuntu() {
     sudo apt-get remove docker docker-engine docker.io
     sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-    sudo apt update
+    sudo add-apt-repository -u "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
     sudo apt install -y docker-ce
     sudo usermod -a -G docker volker
 
@@ -309,8 +306,13 @@ xubuntu() {
 
     # nextcloud
     sudo add-apt-repository ppa:nextcloud-devs/client
-    sudo apt-get update
     sudo apt-get install -y nextcloud-client
+
+    # syncthing
+    curl -s https://syncthing.net/release-key.txt | sudo apt-key add -
+    echo "deb https://apt.syncthing.net/ syncthing stable" | sudo tee /etc/apt/sources.list.d/syncthing.list
+    sudo apt-get update
+    sudo apt-get install syncthing
 }
 
 usage() {
