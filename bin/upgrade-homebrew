@@ -4,7 +4,7 @@ brew upgrade
 
 for app in $(brew cask list); do
         cver="$(brew cask info "${app}" | head -n 1 | cut -d " " -f 2)"
-        ivers=$(cd "/usr/local/Caskroom/${app}/.metadata/" && find -- * -maxdepth 0 | tr '\n' ' ' | sed -e 's/ $//')
+        ivers=$(cd "/usr/local/Caskroom/${app}/.metadata/" && find -- * -maxdepth 0|grep -v "config.json" | tr '\n' ' ' | sed -e 's/ $//')
         aivers=(${ivers})
         nvers=${#aivers[@]}
         if [[ ${nvers} -eq 1 ]]; then
