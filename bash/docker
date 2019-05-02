@@ -67,6 +67,7 @@ chrome(){
         -v "${HOME}/Downloads:/Downloads" \
         -v "$HOME/localdata/dotfiles/google-chrome:/data" \
         -v /dev/shm:/dev/shm \
+        -v /var/run/dbus:/var/run/dbus \
         --hostname browser \
         --device /dev/snd \
         --device /dev/dri \
@@ -317,8 +318,8 @@ plex(){
         -e TZ="$(cat /etc/timezone)" \
         -e PLEX_ALLOWED_NETWORKS="192.168.0.0/16,172.16.0.0/12" \
         -v "${HOME}/localdata/dotfiles/plex/config:/config" \
-        -v "${HOME}/localdata/anschauen:/data:ro" \
         -v "${HOME}/localdata/dotfiles/plex/transcode:/transcode" \
+        -v "${HOME}/Sync/anschauen:/data:ro" \
         linuxserver/plex
 
     echo "$(ip route get 1 | awk '{print $7}'):32400/web"
