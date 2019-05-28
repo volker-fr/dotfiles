@@ -23,8 +23,8 @@ font pango:monospace 8
 # font, it doesn’t scale on retina/hidpi displays.
 
 exec --no-startup-id nextcloud &
-exec --no-startup-id dropbox start &
 exec --no-startup-id nm-applet &
+exec --no-startup-id pcloud &
 exec --no-startup-id redshift-gtk -l 38.54:-77.24 &
 
 # Use Mouse+$mod to drag floating windows to their wanted position
@@ -74,6 +74,9 @@ bindsym $mod+e layout toggle split
 # toggle tiling / floating
 bindsym $mod+Shift+space floating toggle
 
+# sticky
+bindsym $mod+Shift+s sticky toggle
+
 # change focus between tiling / floating windows
 bindsym $mod+space focus mode_toggle
 
@@ -113,6 +116,10 @@ bindsym XF86AudioRaiseVolume exec pactl set-sink-volume 0 +5%
 bindsym XF86AudioLowerVolume exec pactl set-sink-volume 0 -5%
 bindsym XF86AudioMute exec pactl set-sink-mute 0 toggle
 bindsym XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
+#bindsym XF86AudioRaiseVolume exec amixer set Master 5%+
+#bindsym XF86AudioLowerVolume exec amixer set Master 5%-
+#bindsym XF86AudioMute exec amixer set Master 1+ toggle
+#bindsym XF86AudioMicMute exec amixer set Capture toggle
 
 
 # reload the configuration file
@@ -150,5 +157,5 @@ bar {
 }
 
 # Floating windows
-for_window [class="VirtualBox"] floating enable
+#for_window [class="VirtualBox"] floating enable
 for_window [class="MPlayer"] floating enable
