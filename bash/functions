@@ -18,6 +18,12 @@ encfs-pwd() {
 encfs-pwd-root() {
     encfs -o allow_root "$(pwd)/encrypted" "$(pwd)/decrypted"
 }
+gocryptfs-pwd() {
+    gocryptfs "$(pwd)/gocryptfs-encrypted" "$(pwd)/gocryptfs-decrypted"
+}
+gocryptfs-pwd-root() {
+    gocryptfs -allow_other "$(pwd)/gocryptfs-encrypted" "$(pwd)/gocryptfs-decrypted"
+}
 
 # generate random passwords
 genpasswd() {
