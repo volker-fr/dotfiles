@@ -50,7 +50,7 @@ cfn-check(){
         -v "$arg1" \
         volkerfr/cfn-check "$@"
 }
-chrome(){
+chrome-docker(){
     del_stopped chrome
 
     if [ ! -f /tmp/.chrome.json ]; then
@@ -128,7 +128,7 @@ dropbox(){
         && docker logs dropbox
     fi
 }
-evince(){
+evince-docker(){
     del_stopped evince
 
     if [ -f "$1" ]; then
@@ -169,7 +169,7 @@ fdupes(){
         meedan/fdupes \
         "$@"
 }
-firefox(){
+firefox-docker(){
     del_stopped firefox
 
     # check if firefox container is running
@@ -304,11 +304,15 @@ plex(){
         -e PLEX_ALLOWED_NETWORKS="192.168.0.0/16,172.16.0.0/12" \
         -v "${HOME}/localdata/dotfiles/plex/config:/config" \
         -v "${HOME}/localdata/dotfiles/plex/transcode:/transcode" \
-        -v "${HOME}/Sync/anschauen:/data:ro" \
+        -v "${HOME}/Sync/anschauen:/data/sync-anschauen:ro" \
+        -v "/media/volker/encrypted-data/gocryptfs-decrypted/anschauen-no-sync:/data/no-sync-anschauen:ro" \
+        -v "${HOME}/later-anschauen-pcloud:/data/later-anschauen-pcloud:ro" \
         linuxserver/plex
 
     echo "$(ip route get 1 | awk '{print $7}'):32400/web"
     echo "$(ip route get 1 | awk '{print $7}'):33400/"
+    echo "127.0.0.1:32400/web"
+    echo "127.0.0.1:33400/"
 }
 rtorrent(){
     del_stopped rtorrentvpn
@@ -344,7 +348,7 @@ rtorrent(){
         echo "http://127.0.0.1:9080/ - admin:rutorrent"
         echo "http://127.0.0.1:3000/ - admin:rutorrent"
 }
-slack(){
+slack-docker(){
     del_stopped slack
 
     docker run -d \
@@ -364,7 +368,7 @@ slack(){
         --name slack \
         jess/slack "$@"
 }
-thunderbird(){
+thunderbird-docker(){
     del_stopped thunderbird
 
     docker run -d \
@@ -402,6 +406,17 @@ whois(){
 vlc-docker(){
     del_stopped vlc
 
+    if [ -f "$1" ]; then
+        echo "Mapping file $(readlink -f "$1")"
+        echo "          to $1"
+        # for i3 d3menu hack execution...
+        arg1="-v"
+        arg2="$(readlink -f "$1"):/$1"
+    else
+        arg1=""
+        arg2=""
+    fi
+
     #    --device=/dev/sr0 \
     docker run -d \
         -v /etc/localtime:/etc/localtime:ro \
@@ -414,10 +429,10 @@ vlc-docker(){
         --device /dev/dri \
         --group-add audio \
         --group-add video \
-        -v "${HOME}/localdata/anschauen:/home/vlc/anschauen" \
+        $arg1 "$arg2" \
         --device /dev/dri \
         --name vlc \
-        jess/vlc
+        jess/vlc "$@"
 }
 x11vnc(){
     export DISPLAY=:0
