@@ -1,7 +1,7 @@
 #!/bin/sh -e
 set -x
 
-repoDir="$(dirname "$(readlink -f "$0")")"
+repoDir="$(cd "$(dirname "$0")" && pwd -P)"
 
 installDotfiles(){
     # regular dotfiles to link
@@ -22,7 +22,7 @@ installDotfiles(){
         fi
     done
 
-    [ -f "$HOME/.dircolors" ] && wget -q -O "$HOME/.dircolors" \
+    [ ! -f "$HOME/.dircolors" ] && wget -q -O "$HOME/.dircolors" \
         https://raw.githubusercontent.com/seebi/dircolors-solarized/master/dircolors.256dark
 
     if [ "$(uname -s)" = "Linux" ]; then
@@ -282,7 +282,9 @@ macos() {
 
     # font for vim-airline
     cd /tmp
-    git clone https://github.com/powerline/fonts.git
+    if [ ! -d fonts ]; then
+        git clone https://github.com/powerline/fonts.git
+    fi
     cd fonts
     ./install.sh
     echo "========================================================="
@@ -290,7 +292,7 @@ macos() {
     echo "========================================================="
 
     # disable hibernation to disk. saves space.
-    pmset -a hibernatemode 0
+    sudo pmset -a hibernatemode 0
 }
 
 usage() {

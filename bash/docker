@@ -80,9 +80,25 @@ chrome(){
         "$@"
 }
 curl(){
+    # /var/folders is macos temp
     docker run --rm -it \
         --net host \
+        -v "$HOME:$HOME" \
+        -v "/var/folders:/var/folders" \
         jess/curl "$@"
+}
+# Torrent client
+deluge(){
+    del_stopped deluge
+    docker run \
+        -e PUID="$(id -u)" \
+        -e PGID="$(id -g)" \
+        -e UMASK_SET=022 \
+        -p 8112:8112 \
+        -v ~/localdata/deluge-downloads:/downloads \
+        -v ~/localdata/dotfiles/deluge:/config \
+        --name deluge \
+        linuxserver/deluge
 }
 diff-so-fancy(){
     docker run --rm -it \
@@ -223,6 +239,36 @@ plex(){
 
     echo "$(ip route get 1 | awk '{print $NF;exit}'):32400/web"
 }
+rtorrent(){
+    del_stopped rtorrentvpn
+    #docker run -d \
+        #--cap-add=NET_ADMIN \
+    docker run -it \
+        -p 9080:9080 \
+        -p 9443:9443 \
+        -p 8118:8118 \
+        -p 3000:3000 \
+        --name=rtorrentvpn \
+        -v ~/localdata/rtorrent-data:/data \
+        -v ~/localdata/dotfiles/rtorrent/config:/config \
+        -v /etc/localtime:/etc/localtime:ro \
+        -e VPN_ENABLED=yes \
+        -e VPN_USER="$PIA_USERNAME" \
+        -e VPN_PASS="$PIA_PASSWORD" \
+        -e VPN_PROV=pia \
+        -e STRICT_PORT_FORWARD=yes \
+        -e ENABLE_PRIVOXY=yes \
+        -e ENABLE_FLOOD=yes \
+        -e ENABLE_AUTODL_IRSSI=no \
+        -e LAN_NETWORK="127.0.0.1/32" \
+        -e NAME_SERVERS=8.8.8.8,8.8.4.4 \
+        -e DEBUG=false \
+        -e PHP_TZ=UTC \
+        -e UMASK=020 \
+        -e PUID="$(id -u)" \
+        -e PGID="$(id -g)" \
+        binhex/arch-rtorrentvpn
+}
 slack-docker(){
     del_stopped slack
 
@@ -240,6 +286,11 @@ slack-docker(){
         -v "${HOME}/Downloads:/root/OutsideOfDocker" \
         --name slack \
         jess/slack "$@"
+}
+tldr(){
+    docker run --rm -it \
+        s3than/tldr \
+        --theme original "$@"
 }
 traceroute(){
     docker run --rm -it \
