@@ -239,14 +239,7 @@ macosPackages() {
         Caskroom/cask/etrecheck
 
     # Fix openssl
-    # https://medium.com/@katopz/how-to-upgrade-openssl-8d005554401
     brew install openssl
-    mkdir -p /usr/local/lib
-    ln -s /usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib /usr/local/lib/
-    ln -s /usr/local/opt/openssl/lib/libssl.1.0.0.dylib /usr/local/lib/
-
-
-
 }
 
 macosLoginItems(){

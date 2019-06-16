@@ -261,6 +261,21 @@ ngrok(){
     docker run --rm -it \
         --link "$1":http wernight/ngrok ngrok http http:80
 }
+# https://www.getnikola.com/
+nikola() {
+    if [ "$1" != 'init' -a  ! -f conf.py ]; then
+        echo "This is not a nikola folder. If you want to initialize a new one, run"
+        echo "   nikola init"
+        echo "And choose /nikola for the data file. Alternatively run"
+        echo "   nikola init -q /nikola"
+    else
+        docker run --rm -it \
+            -v "$(pwd):/nikola" \
+            -p 8000:8000 \
+            dragas/nikola \
+                nikola "$@"
+    fi
+}
 nmap(){
     docker run --rm -it \
         --net host \
@@ -317,6 +332,8 @@ plex(){
 rtorrent(){
     del_stopped rtorrentvpn
     #    -e LAN_NETWORK="127.0.0.1/32" \
+    #    -e LAN_NETWORK="172.17.0.0/16" \
+    #    -e STRICT_PORT_FORWARD=yes \
     docker run -d \
         --cap-add=NET_ADMIN \
         -p 9080:9080 \
@@ -330,7 +347,7 @@ rtorrent(){
         -e VPN_USER="$PIA_USERNAME" \
         -e VPN_PASS="$PIA_PASSWORD" \
         -e VPN_PROV=pia \
-        -e STRICT_PORT_FORWARD=yes \
+        -e STRICT_PORT_FORWARD=no \
         -e ENABLE_PRIVOXY=yes \
         -e ENABLE_FLOOD=yes \
         -e ENABLE_AUTODL_IRSSI=no \
