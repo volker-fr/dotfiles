@@ -121,6 +121,10 @@ bindsym XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
 #bindsym XF86AudioMute exec amixer set Master 1+ toggle
 #bindsym XF86AudioMicMute exec amixer set Capture toggle
 
+# X1C7
+bindsym XF86MonBrightnessUp exec "light -A 2"
+bindsym XF86MonBrightnessDown exec "light -U 2"
+
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
