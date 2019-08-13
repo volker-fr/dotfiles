@@ -32,18 +32,19 @@ installDotfiles(){
 
     if [ "$(uname -s)" = "Linux" ]; then
         # only run these settings if X11 is installed/running
-        if pidof X > /dev/null || pidof Xorg; then
+        if pidof X > /dev/null || pidof Xorg > /dev/null; then
             # To open URL's in a docker container
-            mkdir -p "$HOME/.local/share/applications"
-            ln -sf "$repoDir/x11/browser.desktop" \
-                "$HOME/.local/share/applications/"
-            if which update-desktop-database >/dev/null; then
-                update-desktop-database "$HOME/.local/share/applications"
-            fi
-            if which gvfs-mime >/dev/null; then
-                gvfs-mime --set "x-scheme-handler/http" "browser.desktop"
-                gvfs-mime --set "x-scheme-handler/https" "browser.desktop"
-            fi
+            #   No more docker for some application for now
+            #mkdir -p "$HOME/.local/share/applications"
+            #ln -sf "$repoDir/x11/browser.desktop" \
+            #    "$HOME/.local/share/applications/"
+            #if which update-desktop-database >/dev/null; then
+            #    update-desktop-database "$HOME/.local/share/applications"
+            #fi
+            #if which gvfs-mime >/dev/null; then
+            #    gvfs-mime --set "x-scheme-handler/http" "browser.desktop"
+            #    gvfs-mime --set "x-scheme-handler/https" "browser.desktop"
+            #fi
 
             # update default xdg-dirs
             xdg-user-dirs-update --set DESKTOP "$HOME"
@@ -75,11 +76,62 @@ installDotfiles(){
     # overwriting is ok in case the code updates
     wget -q -O "$HOME/.vim/autoload/plug.vim" \
         https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    # Neovim setup/linking
+    if [ -e "$HOME/.config/nvim" ] && [ ! -L "$HOME/.config/nvim" ]; then
+        echo "$HOME/.config/nvim exists but isn't a link"
+        echo "Please remove it"
+        exit 1
+    fi
+    test -e "$HOME/.config/nvim" || ln -sfn "$HOME/.vim" "$HOME/.config/nvim"
+    test -e "$HOME/.vim/init.vim" || ln -sfn "$HOME/.vimrc" "$HOME/.config/nvim/init.vim"
 
     # local bashrc
     touch "$HOME/localdata/dotfiles/bashrc.local" \
         && ln -sf "$HOME/localdata/dotfiles/bashrc.local" "$HOME/.bashrc.local"
 }
+
+# Alert/Move the dotfiles instead they are where they shouldn't
+moveDotfiles() {
+    DIRS="$HOME/.VirtualBox
+          $HOME/.thunderbird
+          $HOME/.mozilla/firefox
+          $HOME/.config/google-chrome
+          $HOME/.config/Slack
+          $HOME/.config/rtv
+          $HOME/.config/joplin-desktop
+          $HOME/.gitconfig
+          $HOME/.bashrc.local
+         "
+    for DIR in $DIRS; do
+        if [ -e "$DIR" ] && [ ! -L "$DIR" ]; then
+            echo "$DIR is not a link"
+        fi
+    done
+
+    MOVEABLE="$HOME/.thunderbird
+              $HOME/.config/Slack
+              $HOME/.config/google-chrome
+              $HOME/.config/joplin-desktop
+              $HOME/.gitconfig
+             "
+    for DIR in $MOVEABLE; do
+        if [ -e "$DIR" ] && [ ! -L "$DIR" ]; then
+            DIR_NAME=$(basename "$DIR")
+            # cut dot in beginning of filename
+            if echo "$DIR_NAME" | grep "^\." > /dev/null; then
+                DIR_NAME=$(echo "$DIR_NAME"|cut -c2-)
+            fi
+            DESTINATION="$HOME/localdata/dotfiles/$DIR_NAME"
+            if [ -e "$DESTINATION" ]; then
+                echo "$DESTINATION already exists, please delete it before $DIR can be moved there"
+                exit 1
+            fi
+            mv "$DIR" "$DESTINATION"
+            ln -s "$DESTINATION" "$DIR"
+        fi
+    done
+}
+
 
 disableLidCloseSleep() {
     if ! grep -q "^HandleLidSwitch" /etc/systemd/logind.conf; then
@@ -94,7 +146,7 @@ mainserver() {
     fi
     if ! id|grep sudo > /dev/null; then
         su -c "usermod -a -G sudo volker"
-        echo "Execute\n   newgrp sudo\nand reruncommand"
+        printf "Execute\\n   newgrp sudo\\nand reruncommand"
     fi
     sudo apt remove --purge -y rdnssd
     sudo apt install -y tmux vim rsync git bc
@@ -112,7 +164,7 @@ mainserver() {
     sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
     curl -fsSL https://download.docker.com/linux/debian/gpg \
         | sudo apt-key add -
-    sudo add-apt-repository -u \
+    sudo add-apt-repository --yes -u \
        "deb [arch=amd64] https://download.docker.com/linux/debian \
         $(lsb_release -cs) stable"
     sudo apt install -y docker-ce
@@ -230,41 +282,136 @@ macos() {
 }
 
 xubuntu() {
-    sudo apt install -y i3 \
-                        rxvt-unicode-256color \
-                        openssh-server \
-                        vim \
-                        encfs \
-                        tmux \
-                        virtualbox \
-                        virtualbox-guest-additions-iso \
-                        virtualbox-ext-pack \
-                        mplayer \
-                        redshift-gtk \
-                        gparted \
-                        iotop
+    PACKAGES="i3
+              rxvt-unicode-256color
+              openssh-server
+              neovim
+              encfs
+              tmux
+              virtualbox
+              virtualbox-guest-additions-iso
+              virtualbox-ext-pack
+              mplayer
+              redshift-gtk
+              gparted
+              iotop
+              powerstat
+              shellcheck
+              python3-flake8
+              jsonlint
+              jq
+              source-highlight
+              bash-completion
+              jq
+              source-highlight
+              thunderbird"
+
+    for i in $PACKAGES; do
+        if ! dpkg -l|grep -is "ii  $i " > /dev/null; then
+            INSTALL="$INSTALL $i"
+            echo "$i"
+        fi
+    done
+    # shellcheck disable=SC2086
+    [ -n "$INSTALL" ] && sudo apt-get install -y $INSTALL
 
     # docker
-    sudo apt-get remove docker docker-engine docker.io
-    sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    sudo add-apt-repository -u "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-    sudo apt install -y docker-ce
-    sudo usermod -a -G docker volker
+    if ! dpkg -l|grep -is 'docker-ce' > /dev/null; then
+        sudo apt-get remove docker docker-engine docker.io
+        sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+        sudo add-apt-repository --yes -u "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+        sudo apt install -y docker-ce
+        sudo usermod -a -G docker volker
+    fi
 
-    # Virtualbox
-    sudo usermod -a -G vboxusers volker
+    # For Virtualbox
+    if ! id|grep vboxusers > /dev/null; then
+        sudo usermod -a -G vboxusers volker
+    fi
 
     # nextcloud
-    sudo add-apt-repository ppa:nextcloud-devs/client
-    sudo apt-get install -y nextcloud-client
+    if ! dpkg -l|grep -is 'nextcloud-client' > /dev/null; then
+        sudo add-apt-repository --yes ppa:nextcloud-devs/client
+        sudo apt-get install -y nextcloud-client
+    fi
 
     # syncthing
-    curl -s https://syncthing.net/release-key.txt | sudo apt-key add -
-    echo "deb https://apt.syncthing.net/ syncthing stable" | sudo tee /etc/apt/sources.list.d/syncthing.list
-    sudo apt-get update
-    sudo apt-get install syncthing
+    if ! dpkg -l|grep -is 'syncthing' > /dev/null; then
+        curl -s https://syncthing.net/release-key.txt | sudo apt-key add -
+        echo "deb https://apt.syncthing.net/ syncthing stable" | sudo tee /etc/apt/sources.list.d/syncthing.list
+        sudo apt-get update
+        sudo apt-get install syncthing
+    fi
+
+    # google chrome
+    if ! dpkg -l|grep -is 'google-chrome' > /dev/null; then
+        curl -s -o /tmp/google-chrome-stable.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+            sudo dpkg -i /tmp/google-chrome-stable.deb
+    fi
+
+    # Slack
+    if ! dpkg -l|grep -is 'ii  slack-desktop' > /dev/null; then
+        curl -s -L -o /tmp/slack-desktop.deb https://downloads.slack-edge.com/linux_releases/slack-desktop-4.0.1-amd64.deb && \
+            sudo dpkg -i /tmp/slack-desktop.deb || \
+            sudo apt-get -f install -y && \
+            sudo apt-get update && sudo apt-get upgrade
+    fi
+
+    # Joplin
+    if [ ! -f "$HOME/.joplin/Joplin.AppImage" ]; then
+        curl https://raw.githubusercontent.com/laurent22/joplin/master/Joplin_install_and_update.sh | bash
+    fi
+
+    # pcloud
+    if [ ! -f /usr/local/bin/pcloud ]; then
+        echo "Install pCloud: https://www.pcloud.com/download-free-online-cloud-file-storage.html"
+    fi
+
+    # gocryptfs
+    if [ ! -f /usr/local/bin/gocryptfs ]; then
+        URL=$(curl -s https://api.github.com/repos/rfjakob/gocryptfs/releases/latest \
+            | jq -r ".assets[] | select(.name) | .browser_download_url" \
+            | grep "_linux-static_amd64.tar.gz$")
+        curl -L -o /tmp/gocryptfs.tgz "$URL"
+        cd /tmp && tar xvfz gocryptfs.tgz
+        chmod 755 gocryptfs
+        sudo mv gocryptfs /usr/local/bin
+    fi
+
 }
+
+x1c7Config() {
+    # Uses /sys/class/backlight/%k/brightness
+    if ! dpkg -l|grep -is '^ii  light ' > /dev/null; then
+        curl -L -s -o /tmp/light.deb https://github.com/haikarainen/light/releases/download/v1.2/light_1.2_amd64.deb && \
+            sudo dpkg -i /tmp/light.deb
+        sudo usermod -a -G video volker
+        echo "run this command: newgrp video"
+    fi
+
+    if ! dpkg -l|grep -is '^ii  tlp-rdw ' > /dev/null; then
+        sudo add-apt-repository ppa:linrunner/tlp
+        sudo apt-get update
+        sudo apt-get install tlp tlp-rdw
+    fi
+
+    echo
+    echo "Audio"
+    echo "====="
+    echo "Maybe: https://forums.linuxmint.com/viewtopic.php?t=91453"
+    echo "Maybe: https://forums.lenovo.com/t5/Ubuntu/Guide-X1-Carbon-7th-Generation-Ubuntu-compatability/td-p/4489823"
+    echo "Pavucontorl and change output to 4.0 + analogue input"
+    echo
+    echo "Power"
+    echo "====="
+    echo "https://github.com/BelBES/thinkpad_x1_carbon_6th_linux"
+    echo "https://github.com/erpalma/throttled"
+    echo "https://itsfoss.com/reduce-overheating-laptops-linux/"
+    echo "powerstat -d 0"
+    echo "sudo tlp-stat -t"
+}
+
 
 usage() {
     echo "$0 <argument>:"
@@ -273,6 +420,7 @@ usage() {
     echo "   $0 macos"
     echo "   $0 xubuntu"
     echo "   $0 dotfiles"
+    echo "   $0 movedotfiles"
 }
 
 main() {
@@ -284,20 +432,31 @@ main() {
     case "$1" in
         mainserver)
             installDotfiles
+            moveDotfiles
             mainserver
             ;;
         xubuntu)
             # xubuntu-minimal installation
             installDotfiles
-            disableLidCloseSleep
+            moveDotfiles
+            if grep "ThinkPad X1 Carbon 7th" /sys/devices/virtual/dmi/id/product_family > /dev/null; then
+                echo "Identified ThinkPad X1C7"
+                x1c7Config
+            fi
+            #disableLidCloseSleep
             xubuntu
             ;;
         "macos")
             installDotfiles
+            moveDotfiles
             macos
             ;;
         "dotfiles")
             installDotfiles
+            moveDotfiles
+            ;;
+        movedotfiles)
+            moveDotfiles
             ;;
         *)
             usage
