@@ -462,7 +462,7 @@ x11vnc(){
         --ipc=host \
         volkerfr/x11vnc "$@"
 }
-w3m(){
+w3m-docker(){
     docker run --rm -it \
         --net host \
         corbinu/alpine-w3m "$@"
