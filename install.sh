@@ -1,11 +1,16 @@
 #!/bin/sh -e
-set -x
+#set -x
 
 repoDir="$(cd "$(dirname "$0")" && pwd -P)"
 
 installDotfiles(){
     # regular dotfiles to link
-    for file in Xresources bash bashrc bc.rc i3 tmux.conf vimrc inputrc; do
+    EXTRA_FILES=""
+    if [ "$(uname -s)" = "Linux" ]; then
+        EXTRA_FILES="Xresources i3"
+    fi
+
+    for file in bash bashrc bc.rc tmux.conf vimrc inputrc $EXTRA_FILES; do
         source="$repoDir/$file"
         target="$HOME/.$file"
         # File existing but not linked?
