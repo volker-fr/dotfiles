@@ -304,6 +304,7 @@ xubuntu() {
               bash-completion
               jq
               source-highlight
+              tigervnc-viewer
               thunderbird"
 
     for i in $PACKAGES; do
