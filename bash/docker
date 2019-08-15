@@ -232,6 +232,14 @@ htop(){
         --name htop \
         jess/htop
 }
+iftop() {
+    INTERFACE=$(ip link|grep "^[0-9]"|awk '{ print $2 }'|grep "wlp")
+    docker run --rm -it \
+        --net host \
+        --name iftop \
+        mikesplain/iftop \
+            -i "$INTERFACE"
+}
 libreoffice-docker(){
     del_stopped libreoffice
 
