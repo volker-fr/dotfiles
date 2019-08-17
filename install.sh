@@ -113,6 +113,7 @@ moveDotfiles() {
               $HOME/.config/google-chrome
               $HOME/.config/joplin-desktop
               $HOME/.gitconfig
+              $HOME/.mozilla/firefox
              "
     for DIR in $MOVEABLE; do
         if [ -e "$DIR" ] && [ ! -L "$DIR" ]; then
