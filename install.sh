@@ -304,6 +304,7 @@ xubuntu() {
               bash-completion
               jq
               source-highlight
+              evince
               tigervnc-viewer
               thunderbird"
 
