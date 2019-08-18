@@ -92,7 +92,7 @@ installDotfiles(){
 
 # Alert/Move the dotfiles instead they are where they shouldn't
 moveDotfiles() {
-    DIRS="$HOME/.VirtualBox
+    DIRS="$HOME/.config/VirtualBox
           $HOME/.thunderbird
           $HOME/.mozilla/firefox
           $HOME/.config/google-chrome
@@ -114,6 +114,7 @@ moveDotfiles() {
               $HOME/.config/joplin-desktop
               $HOME/.gitconfig
               $HOME/.mozilla/firefox
+              $HOME/.config/VirtualBox
              "
     for DIR in $MOVEABLE; do
         if [ -e "$DIR" ] && [ ! -L "$DIR" ]; then
