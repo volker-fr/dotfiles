@@ -308,6 +308,7 @@ xubuntu() {
               source-highlight
               evince
               tigervnc-viewer
+              eog
               thunderbird"
 
     for i in $PACKAGES; do
@@ -383,6 +384,10 @@ xubuntu() {
         sudo mv gocryptfs /usr/local/bin
     fi
 
+    # PIA
+    if [ ! -d "/opt/piavpn" ]; then
+        curl -s -L https://installers.privateinternetaccess.com/download/pia-linux-1.3.3-02880.run | sh
+    fi
 }
 
 x1c7Config() {
