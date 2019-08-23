@@ -17,7 +17,7 @@ for app in $(brew cask list); do
         echo "Press return to update the package"
         read -r
         brew cask fetch "${app}"
-        brew cask install "${app}"
+        brew cask reinstall "${app}"
 done
 
 # Cleanup
