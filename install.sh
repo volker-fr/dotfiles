@@ -405,12 +405,16 @@ x1c7Config() {
         sudo apt-get install tlp tlp-rdw
     fi
 
+    if ! grep '^\[Element Master\]' /usr/share/pulseaudio/alsa-mixer/paths/analog-output.conf.common > /dev/null; then
+        sudo sed -i '/^\[Element PCM\]/i [Element Master]\nswitch = mute\nvolume = ignore\n' \
+            /usr/share/pulseaudio/alsa-mixer/paths/analog-output.conf.common
+    fi
+
     echo
     echo "Audio"
     echo "====="
-    echo "Maybe: https://forums.linuxmint.com/viewtopic.php?t=91453"
     echo "Maybe: https://forums.lenovo.com/t5/Ubuntu/Guide-X1-Carbon-7th-Generation-Ubuntu-compatability/td-p/4489823"
-    echo "Pavucontorl and change output to 4.0 + analogue input"
+    echo "pavucontrol and change output to 4.0 + analogue input"
     echo
     echo "Power"
     echo "====="
