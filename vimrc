@@ -5,16 +5,17 @@ call plug#begin('~/.vim/plugged')
 Plug 'vimwiki/vimwiki'
 Plug 'altercation/vim-colors-solarized'
 Plug 'Yggdroot/indentLine'
-Plug 'nathanaelkane/vim-indent-guides' " due of json issues with indentLine
+Plug 'nathanaelkane/vim-indent-guides', { 'for': 'json' } " due of json issues with indentLine
 Plug 'vim-syntastic/syntastic' " testing
 Plug 'airblade/vim-gitgutter' " show git changes on the left side of each line
 Plug 'tpope/vim-fugitive' " show git branch in status line & :Gblame
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'tpope/vim-endwise' " auto end, fi
-Plug 'vim-scripts/nginx.vim' " vim syntax hilightning
+Plug 'vim-scripts/nginx.vim' " vim syntax hilighting
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'pearofducks/ansible-vim'
+Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 call plug#end()
 
 "
