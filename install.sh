@@ -309,6 +309,7 @@ xubuntu() {
               evince
               tigervnc-viewer
               eog
+              xautolock
               thunderbird"
 
     for i in $PACKAGES; do
