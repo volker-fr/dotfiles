@@ -4,15 +4,16 @@
 shopt -s expand_aliases
 
 # bashrc doesn't work due of the non-interactive check
-for i in ~/.bash/*; do
-	source $i
+for i in $HOME/.bash/*; do
+    source "$i"
 done
-[ -f ~/.bashrc.local ] && source ~/.bashrc.local
+
+[ -f "$HOME/.bashrc.local" ] && source "$HOME/.bashrc.local"
 
 IFS=:
 (
-	stest -flx $PATH
-	compgen -A function
-	alias | awk -F '[ =]' '{print $2}'
+    stest -flx "$PATH"
+    compgen -A function
+    alias | awk -F '[ =]' '{print $2}'
 ) \
 | sort -u | dmenu "$@" | source /dev/stdin
