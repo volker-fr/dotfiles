@@ -294,6 +294,7 @@ xubuntu() {
               virtualbox-guest-additions-iso
               virtualbox-ext-pack
               mplayer
+              mpv
               redshift-gtk
               gparted
               iotop
@@ -310,6 +311,8 @@ xubuntu() {
               tigervnc-viewer
               eog
               xautolock
+              xss-lock
+              compton
               thunderbird"
 
     for i in $PACKAGES; do
