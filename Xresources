@@ -81,3 +81,8 @@
 
 URxvt.intensityStyles: false
 *scrollBar: false
+
+!! Open URLs via double click
+*rxvt*perl-ext-common:    default,matcher
+*rxvt*url-launcher:       google-chrome
+*rxvt*matcher.button:     1
