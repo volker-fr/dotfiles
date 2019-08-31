@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Make also functions and aliases executeable
+
+# make sure aliases are executed correctly
+#shopt -s expand_aliases
+
+# bashrc doesn't work due of the non-interactive check
+for i in $HOME/.bash/*; do
+    source "$i"
+done
+
+[ -f "$HOME/.bashrc.local" ] && source "$HOME/.bashrc.local"
+
+(
+    stest -flx "$PATH"
+    compgen -A function
+    compgen -c
+    alias | awk -F '[ =]' '{print $2}'
+) \
+| sort -u

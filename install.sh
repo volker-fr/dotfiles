@@ -303,6 +303,7 @@ xubuntu() {
               python3-flake8
               jsonlint
               jq
+              rofi
               source-highlight
               bash-completion
               jq
