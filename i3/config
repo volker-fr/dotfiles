@@ -27,7 +27,7 @@ font pango:monospace 8
 # font, it doesn’t scale on retina/hidpi displays.
 
 exec --no-startup-id xautolock -time 10 -detectsleep -locker 'i3lock -c 000000 -f -n'
-exec --no-startup-id xss-lock -- i3lock -c 000000 -f -n &
+exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock -c 000000 -f -n &
 exec --no-startup-id nextcloud &
 exec --no-startup-id nm-applet &
 exec --no-startup-id pcloud &
@@ -35,6 +35,7 @@ exec --no-startup-id redshift-gtk -l 33.02:-96.69 &
 exec --no-startup-id $HOME/.joplin/Joplin.AppImage &
 exec --no-startup-id slack &
 exec --no-startup-id syncthing &
+exec --no-startup-id blueman-applet &
 # Popup in case another workspace triggers an event
 exec --no-startup-id i3-msg -t subscribe -m '[ "workspace" ]' | jq --unbuffered -Mrc '. | select(.change == "urgent" and .current.urgent == true).current.name'|xargs -i -n1 notify-send 'Urgent: {}' &
 # Disable touchpad clicks for 1 sec
@@ -193,3 +194,4 @@ bar {
 
 # Floating windows
 for_window [class="MPlayer"] floating enable
+for_window [class="mpv"] floating enable
