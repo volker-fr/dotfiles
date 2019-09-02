@@ -393,6 +393,11 @@ xubuntu() {
     if [ ! -d "/opt/piavpn" ]; then
         curl -s -L https://installers.privateinternetaccess.com/download/pia-linux-1.3.3-02880.run | sh
     fi
+
+    # disable bluetooth on boot
+    if ! grep "AutoEnable=false" /etc/bluetooth/main.conf > /dev/null; then
+        sudo sed -i 's/^AutoEnable=.*/AutoEnable=false/' /etc/bluetooth/main.conf
+    fi
 }
 
 x1c7Config() {
