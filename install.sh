@@ -115,20 +115,29 @@ moveDotfiles() {
               $HOME/.gitconfig
               $HOME/.mozilla/firefox
               $HOME/.config/VirtualBox
+              $HOME/.config/rtv
              "
     for DIR in $MOVEABLE; do
+        DIR_NAME=$(basename "$DIR")
+        # cut dot in beginning of filename
+        if echo "$DIR_NAME" | grep "^\." > /dev/null; then
+            DIR_NAME=$(echo "$DIR_NAME"|cut -c2-)
+        fi
+        DESTINATION="$HOME/localdata/dotfiles/$DIR_NAME"
+
+        # Move/link if it doesn't exists
         if [ -e "$DIR" ] && [ ! -L "$DIR" ]; then
-            DIR_NAME=$(basename "$DIR")
-            # cut dot in beginning of filename
-            if echo "$DIR_NAME" | grep "^\." > /dev/null; then
-                DIR_NAME=$(echo "$DIR_NAME"|cut -c2-)
-            fi
-            DESTINATION="$HOME/localdata/dotfiles/$DIR_NAME"
             if [ -e "$DESTINATION" ]; then
                 echo "$DESTINATION already exists, please delete it before $DIR can be moved there"
                 exit 1
             fi
             mv "$DIR" "$DESTINATION"
+            ln -s "$DESTINATION" "$DIR"
+        fi
+
+        # exists, but not linked
+        if [ -e "$DESTINATION" ] && [ ! -e "$DIR" ]; then
+            echo "$DESTINATION exists, but not $DIR"
             ln -s "$DESTINATION" "$DIR"
         fi
     done
