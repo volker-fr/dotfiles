@@ -285,6 +285,7 @@ macos() {
 
 xubuntu() {
     PACKAGES="i3
+              alttab
               rxvt-unicode-256color
               openssh-server
               neovim

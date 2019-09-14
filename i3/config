@@ -40,7 +40,8 @@ exec --no-startup-id blueman-applet &
 exec --no-startup-id i3-msg -t subscribe -m '[ "workspace" ]' | jq --unbuffered -Mrc '. | select(.change == "urgent" and .current.urgent == true).current.name'|xargs -i -n1 notify-send 'Urgent: {}' &
 # Disable touchpad clicks for 1 sec
 # alternative try:  xinput set-prop "SYNA8004:00 06CB:CD8B Touchpad" "Synaptics Palm Detection" 1
-exec --no-startup-id syndaemon -i 1 -t -d
+exec --no-startup-id syndaemon -i 2 -t -d
+exec_always alttab -d 2 -s 1 -w 1
 
 
 # Use Mouse+$mod to drag floating windows to their wanted position
