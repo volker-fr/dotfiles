@@ -294,6 +294,7 @@ macos() {
 
 xubuntu() {
     PACKAGES="i3
+              acpi
               alttab
               rxvt-unicode-256color
               openssh-server
@@ -407,6 +408,15 @@ xubuntu() {
     # disable bluetooth on boot
     if ! grep "AutoEnable=false" /etc/bluetooth/main.conf > /dev/null; then
         sudo sed -i 's/^AutoEnable=.*/AutoEnable=false/' /etc/bluetooth/main.conf
+    fi
+
+    # systemd
+    if [ ! -e ~/.config/systemd/user/battery-monitor.service ]; then
+        mkdir -p ~/.config/systemd/user
+        ln -s ~/repos/dotfiles/bin/battery-monitor.systemd.user.service \
+            ~/.config/systemd/user/battery-monitor.service
+        systemctl --user daemon-reload
+        systemctl --user start battery-monitor.service
     fi
 }
 
