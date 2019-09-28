@@ -293,39 +293,40 @@ macos() {
 }
 
 xubuntu() {
-    PACKAGES="i3
+    PACKAGES="
               acpi
               alttab
-              rxvt-unicode-256color
-              openssh-server
-              neovim
+              bash-completion
+              compton
               encfs
+              eog
+              evince
+              gparted
+              i3
+              iotop
+              jsonlint
+              jq
+              mplayer
+              mpv
+              neovim
+              openssh-server
+              powerstat
+              python3-flake8
+              redshift-gtk
+              rofi
+              rxvt-unicode-256color
+              shellcheck
+              source-highlight
+              thunderbird
+              tigervnc-viewer
               tmux
+              unrar
               virtualbox
               virtualbox-guest-additions-iso
               virtualbox-ext-pack
-              mplayer
-              mpv
-              redshift-gtk
-              gparted
-              iotop
-              powerstat
-              shellcheck
-              python3-flake8
-              jsonlint
-              jq
-              rofi
-              source-highlight
-              bash-completion
-              jq
-              source-highlight
-              evince
-              tigervnc-viewer
-              eog
               xautolock
               xss-lock
-              compton
-              thunderbird"
+              "
 
     for i in $PACKAGES; do
         if ! dpkg -l|grep -is "ii  $i " > /dev/null; then
