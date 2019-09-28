@@ -296,6 +296,7 @@ xubuntu() {
     PACKAGES="
               acpi
               alttab
+              arandr
               bash-completion
               compton
               encfs
