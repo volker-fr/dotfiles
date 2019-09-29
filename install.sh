@@ -415,9 +415,10 @@ xubuntu() {
     # systemd
     if [ ! -e ~/.config/systemd/user/battery-monitor.service ]; then
         mkdir -p ~/.config/systemd/user
-        ln -s ~/repos/dotfiles/bin/battery-monitor.systemd.user.service \
+        ln -s ~/repos/dotfiles/bin/battery-monitor.service \
             ~/.config/systemd/user/battery-monitor.service
         systemctl --user daemon-reload
+        systemctl --user enable battery-monitor.service
         systemctl --user start battery-monitor.service
     fi
 }
