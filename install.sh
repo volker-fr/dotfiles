@@ -247,7 +247,8 @@ macosPackages() {
         Caskroom/cask/time-out \
         Caskroom/cask/private-internet-access \
         Caskroom/cask/quitter \
-        Caskroom/cask/etrecheck
+        Caskroom/cask/etrecheck \
+        Caskroom/cask/spectacle
 
     # Fix openssl
     brew install openssl
