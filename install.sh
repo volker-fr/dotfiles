@@ -425,6 +425,12 @@ xubuntu() {
         systemctl --user enable battery-monitor.service
         systemctl --user start battery-monitor.service
     fi
+
+    # Upgrade all packages
+    if ! grep "\\*:\\*" /etc/apt/apt.conf.d/50unattended-upgrades > /dev/null; then
+        sudo sed -i '/^Unattended-Upgrade::Allowed-Origins/a "*:*";' \
+            /etc/apt/apt.conf.d/50unattended-upgrades
+    fi
 }
 
 x1c7Config() {
@@ -466,7 +472,6 @@ x1c7Config() {
 usage() {
     echo "$0 <argument>:"
     echo "   $0 mainserver"
-    echo "   $0 ubuntu"
     echo "   $0 macos"
     echo "   $0 xubuntu"
     echo "   $0 dotfiles"
