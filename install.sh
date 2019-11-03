@@ -299,6 +299,7 @@ xubuntu() {
               alttab
               arandr
               bash-completion
+              build-essential
               compton
               encfs
               eog
@@ -308,6 +309,7 @@ xubuntu() {
               iotop
               jsonlint
               jq
+              maim
               mplayer
               mpv
               neovim
@@ -322,6 +324,7 @@ xubuntu() {
               thunderbird
               tigervnc-viewer
               tmux
+              unattended-upgrades
               unrar
               virtualbox
               virtualbox-guest-additions-iso
