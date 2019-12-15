@@ -299,6 +299,7 @@ xubuntu() {
               alttab
               arandr
               bash-completion
+              borgbackup
               build-essential
               compton
               encfs
