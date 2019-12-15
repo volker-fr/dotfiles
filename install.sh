@@ -431,6 +431,14 @@ xubuntu() {
         sudo sed -i '/^Unattended-Upgrade::Allowed-Origins/a "*:*";' \
             /etc/apt/apt.conf.d/50unattended-upgrades
     fi
+
+    # ignore more files for updatedb
+    if ! grep "fuse.gocryptfs" /etc/updatedb.conf > /dev/null; then
+        sudo sed -i 's/\(PRUNEFS=.*\)"$/\1 fuse.gocryptfs"/' /etc/updatedb.conf
+    fi
+    if ! grep "/home\"" /etc/updatedb.conf > /dev/null; then
+        sudo sed -i 's,\(PRUNEPATHS=.*\)"$,\1 /home",' /etc/updatedb.conf
+    fi
 }
 
 x1c7Config() {
