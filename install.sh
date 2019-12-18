@@ -457,15 +457,23 @@ x1c7Config() {
         sudo apt-get install tlp tlp-rdw
     fi
 
+    # change in pulseaudio the profile, then:
+    # via: pacmd list-cards | grep 'active profile'
+    # test via: pactl set-card-profile <symbolic_name> <profilename>
+    #if ! grep set-card-profile /etc/pulse/default.pa > /dev/null; then
+    #    echo "set-card-profile alsa_card.pci-0000_00_1f.3 output:analog-surround-40+input:analog-stereo" \
+    #       | sudo tee -a /etc/pulse/default.pa > /dev/null
+    #fi
+
     if ! grep '^\[Element Master\]' /usr/share/pulseaudio/alsa-mixer/paths/analog-output.conf.common > /dev/null; then
-        sudo sed -i '/^\[Element PCM\]/i [Element Master]\nswitch = mute\nvolume = ignore\n' \
+        sudo sed -i '/^\[Element PCM\]/i [Element Master]\nswitch = mute\n;volume-limit = 0.01\nvolume-limit = 0.1\n;volume = ignore\n' \
             /usr/share/pulseaudio/alsa-mixer/paths/analog-output.conf.common
     fi
 
     echo
     echo "Audio"
     echo "====="
-    echo "Maybe: https://forums.lenovo.com/t5/Ubuntu/Guide-X1-Carbon-7th-Generation-Ubuntu-compatability/td-p/4489823"
+    echo "Maybe: https://forums.lenovo.com/t5/Ubuntu/Guide-X1-Carbon-7th-Generation-Ubuntu-compatability/m-p/4489823#M2761<Paste>"
     echo "pavucontrol and change output to 4.0 + analogue input"
     echo
     echo "Power"
