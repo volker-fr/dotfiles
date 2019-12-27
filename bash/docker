@@ -355,7 +355,7 @@ rtorrent(){
         -e VPN_USER="$PIA_USERNAME" \
         -e VPN_PASS="$PIA_PASSWORD" \
         -e VPN_PROV=pia \
-        -e STRICT_PORT_FORWARD=no \
+        -e STRICT_PORT_FORWARD=yes \
         -e ENABLE_PRIVOXY=yes \
         -e ENABLE_FLOOD=yes \
         -e ENABLE_AUTODL_IRSSI=no \
