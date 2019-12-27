@@ -416,6 +416,8 @@ xubuntu() {
     if ! grep "AutoEnable=false" /etc/bluetooth/main.conf > /dev/null; then
         sudo sed -i 's/^AutoEnable=.*/AutoEnable=false/' /etc/bluetooth/main.conf
     fi
+    # disable bluetooth on i3 login/blueman-applet startup
+    gsettings set org.blueman.plugins.powermanager auto-power-on false
 
     # systemd
     if [ ! -e ~/.config/systemd/user/battery-monitor.service ]; then
@@ -455,6 +457,9 @@ x1c7Config() {
         sudo add-apt-repository ppa:linrunner/tlp
         sudo apt-get update
         sudo apt-get install tlp tlp-rdw
+        # other packages supposedly helpful for energy savings
+        sudo apt-ge tinstall acpitool tp-smapi-dkms ethtool smartmontools ssmtp \
+            libcpufreq0 indicator-cpufreq
     fi
 
     # change in pulseaudio the profile, then:
