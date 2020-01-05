@@ -11,7 +11,7 @@ if [ "$1" = "on" ]; then
 elif [ "$1" = "off" ]; then
   # Making screen normal
   GAMMA=1:1:1
-  REDSHIFT=$(grep redshift ~/.i3/config|sed 's/.*--no-startup-id //')
+  REDSHIFT=$(grep redshift ~/.i3/config|grep -v "^#"|sed 's/.*--no-startup-id //')
   $REDSHIFT &
 else
   echo Requires one of: "on", "off"
