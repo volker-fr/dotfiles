@@ -12,9 +12,9 @@ checkBatteryLevel() {
         exit
     fi
 
-    if [ "$battery_level" -le 5 ]; then
+    if [ "$battery_level" -le 4 ]; then
         systemctl suspend
-    elif [ "$battery_level" -le 10 ]; then
+    elif [ "$battery_level" -le 7 ]; then
         notify-send "Low Battery" "Your computer will suspend soon unless plugged into a power outlet." -u critical
         ( speaker-test -t sine -f 1000 )& pid=$! ; sleep 2s ; kill -9 $pid
     elif [ "$battery_level" -le 20 ] ||  [ "$battery_level" -le 30 ]; then
