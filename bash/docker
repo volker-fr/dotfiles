@@ -213,7 +213,7 @@ gcalcli(){
         -v "${HOME}/localdata/dotfiles/gcalcli/gcalcli_oauth:/home/gcalcli/.gcalcli_oauth" \
         -v "${HOME}/localdata/dotfiles/gcalcli/gcalclirc:/home/gcalcli/.gcalclirc" \
         --name gcalcli \
-        jess/gcalcli "$@"
+        volkerfr/gcalcli "$@"
 }
 gimp(){
     docker run -t --rm -it \
