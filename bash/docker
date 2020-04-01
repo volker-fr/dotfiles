@@ -233,7 +233,7 @@ htop(){
         jess/htop
 }
 iftop() {
-    INTERFACE=$(ip link|grep "^[0-9]"|awk '{ print $2 }'|grep "wlp")
+    INTERFACE=$(ip link|grep "^[0-9]"|awk '{ print $2 }'|grep "wl")
     docker run --rm -it \
         --net host \
         --name iftop \
@@ -359,6 +359,8 @@ rtorrent(){
         -e ENABLE_PRIVOXY=yes \
         -e ENABLE_FLOOD=yes \
         -e ENABLE_AUTODL_IRSSI=no \
+        -e WEBUI_PASS=rutorrent \
+        -e RPC2_PASS=rutorrent \
         -e LAN_NETWORK="172.17.0.0/16" \
         -e NAME_SERVERS=8.8.8.8,8.8.4.4 \
         -e DEBUG=false \
