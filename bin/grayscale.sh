@@ -1,5 +1,5 @@
 #!/bin/sh
-compton --inactive-dim 0.2 --backend glx --glx-fshader-win \
+picom --backend glx --glx-fshader-win \
 "
 uniform float opacity;
 uniform bool invert_color;
