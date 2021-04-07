@@ -94,31 +94,33 @@ installDotfiles(){
 
 # Alert/Move the dotfiles instead they are where they shouldn't
 moveDotfiles() {
-    DIRS="$HOME/.config/VirtualBox
-          $HOME/.thunderbird
-          $HOME/.mozilla/firefox
-          $HOME/.config/google-chrome
-          $HOME/.config/Slack
-          $HOME/.config/joplin-desktop
-          $HOME/.gitconfig
-          $HOME/.bashrc.local
-         "
+    IFS=$'\n'
+    DIRS="
+$HOME/.thunderbird
+$HOME/.bashrc.local
+$HOME/.kube
+$HOME/.config/borg
+$HOME/.config/discord
+$HOME/.config/Nextcloud
+$HOME/.config/Authy Desktop
+$HOME/.config/pcloud
+$HOME/.config/rclone
+$HOME/.config/syncthing
+$HOME/.config/Slack
+$HOME/.config/google-chrome
+$HOME/.config/joplin-desktop
+$HOME/.config/skypeforlinux
+$HOME/.gitconfig
+$HOME/.mozilla/firefox
+$HOME/.config/VirtualBox
+$HOME/.local/share/activitywatch
+$HOME/.local/share/TelegramDesktop
+$HOME/.local/share/keyrings
+$HOME/.local/share/fonts
+"
     for DIR in $DIRS; do
-        if [ -e "$DIR" ] && [ ! -L "$DIR" ]; then
-            echo "$DIR is not a link"
-        fi
-    done
-
-    MOVEABLE="$HOME/.thunderbird
-              $HOME/.config/Slack
-              $HOME/.config/google-chrome
-              $HOME/.config/joplin-desktop
-              $HOME/.gitconfig
-              $HOME/.mozilla/firefox
-              $HOME/.config/VirtualBox
-             "
-    for DIR in $MOVEABLE; do
         DIR_NAME=$(basename "$DIR")
+
         # cut dot in beginning of filename
         if echo "$DIR_NAME" | grep "^\." > /dev/null; then
             DIR_NAME=$(echo "$DIR_NAME"|cut -c2-)
@@ -137,7 +139,7 @@ moveDotfiles() {
 
         # exists, but not linked
         if [ -e "$DESTINATION" ] && [ ! -e "$DIR" ]; then
-            echo "$DESTINATION exists, but not $DIR"
+            echo "$DESTINATION exists, but not $DIR. Linking."
             ln -s "$DESTINATION" "$DIR"
         fi
     done
@@ -449,15 +451,30 @@ arch() {
     umask 022
 
     # pre-compiled AUR's like google-chrome
-    if ! grep "^\[disastrousaur\]" /etc/pacman.conf > /dev/null; then
+    # Disastrousaur decomissioned...
+    #if ! grep "^\[disastrousaur\]" /etc/pacman.conf > /dev/null; then
+    #    echo "" | sudo tee -a /etc/pacman.conf > /dev/null
+    #    echo "[disastrousaur]" | sudo tee -a /etc/pacman.conf > /dev/null
+    #    echo "Server = https://mirror.repohost.de/\$repo/\$arch" | sudo tee -a /etc/pacman.conf > /dev/null
+    #    sudo pacman-key --recv-keys CB8DA19D1551E92F
+    #    sudo pacman-key --lsign-key  CB8DA19D1551E92F
+    #fi
+
+    # enable multilib for wine
+    if ! grep "^\[multilib\]" /etc/pacman.conf > /dev/null; then
         echo "" | sudo tee -a /etc/pacman.conf > /dev/null
-        echo "[disastrousaur]" | sudo tee -a /etc/pacman.conf > /dev/null
-        echo "Server = https://mirror.repohost.de/\$repo/\$arch" | sudo tee -a /etc/pacman.conf > /dev/null
-        sudo pacman-key --recv-keys CB8DA19D1551E92F
-        sudo pacman-key --lsign-key  CB8DA19D1551E92F
-        sudo pacman -Sy
+        echo "[multilib]" | sudo tee -a /etc/pacman.conf > /dev/null
+        echo "Include = /etc/pacman.d/mirrorlist" | sudo tee -a /etc/pacman.conf > /dev/null
     fi
 
+
+# From xubuntu, adapt
+#    # disable bluetooth on boot
+#    if ! grep "AutoEnable=false" /etc/bluetooth/main.conf > /dev/null; then
+#        sudo sed -i 's/^AutoEnable=.*/AutoEnable=false/' /etc/bluetooth/main.conf
+#    fi
+#    # disable bluetooth on i3 login/blueman-applet startup
+#    gsettings set org.blueman.plugins.powermanager auto-power-on false
 
     #
     # Find the quickest mirror before we install anything
@@ -506,7 +523,6 @@ arch() {
         xorg-fonts-75dpi \
         xorg-fonts-misc \
         xorg-fonts-type1 \
-        ttf-symbola \
         ttf-dejavu \
         adobe-source-han-sans-otc-fonts \
         man \
@@ -524,18 +540,15 @@ arch() {
         light \
         strace \
         docker \
+        docker-compose \
         gocryptfs \
         powertop \
         tlp tlp-rdw \
         eog \
         evince \
         bind-tools \
-        google-chrome \
-        slack-desktop \
-        joplin \
         lsb-release \
         bc \
-        xorg-xrandr \
         xautolock \
         xss-lock \
         gnome-keyring \
@@ -548,8 +561,17 @@ arch() {
         fprintd \
         dunst \
         cups \
-        yay \
-        libreoffice-fresh
+        libreoffice-fresh \
+        gimp \
+        tigervnc \
+        thunar \
+        gvfs \
+        wine \
+        blueman \
+        bluez \
+        bluez-utils \
+        nfs-utils \
+        smbclient \
 
 
     # Dependency installations
@@ -561,6 +583,7 @@ arch() {
     #   virtualbox-host-dkms => LTS kernel, else module-arch would be sufficient
     #   tlp => acpi_call
     #   tlp => tlp-rdw
+    #   blueman => libappindicator-gtk3
     #   cpus/printer: ghostscript and gsfonts (non-pdf printer), foomatic-db* (driver search)
     #   acpi battery-monitor.sh
     #   acpi battery-monitor.sh
@@ -571,7 +594,6 @@ arch() {
         linux-headers \
         linux-lts-headers \
         virtualbox-host-dkms \
-            virtualbox-ext-oracle \
             virtualbox-guest-iso \
         xorg-xinput \
         xf86-input-synaptics \
@@ -584,7 +606,24 @@ arch() {
             foomatic-db-nonfree-ppds \
             foomatic-db-engine \
             system-config-printer \
-        acpi
+        acpi \
+        xorg-xhost \
+        thunar-volman \
+        libappindicator-gtk3 \
+        pulseaudio-bluetooth
+
+    # AUR packages
+    yay -S \
+        google-chrome \
+        joplin-desktop \
+        discord_arch_electron \
+        ttf-symbola \
+        virtualbox-ext-oracle \
+        slack-desktop \
+        zoom \
+        skypeforlinux-stable-bin \
+        masterpdfeditor-free
+
 
     # Fix audio
     sudo pacman -S --needed \
@@ -658,6 +697,8 @@ EOF
 
     # Add user to group
     sudo usermod -a -G docker volker
+    # video for light command
+    sudo usermod -a -G video volker
     sudo usermod -a -G input volker
     sudo usermod -a -G cups volker
     #newgrp cups
@@ -673,8 +714,217 @@ EOF
         pcloud-drive \
         fontconfig-ubuntu \
         activitywatch-bin \
-        masterpdfeditor-free
+        masterpdfeditor-free \
+        activitywatch-bin \
+        authy \
 
+    umask 077
+}
+
+manjaro() {
+    # make configuration files we create readable by the user
+    umask 022
+
+    #
+    # Find the quickest mirror before we install anything
+    #
+#    if [ ! -e /etc/pacman.d/mirrorlist.orig ]; then
+#        sudo pacman -Suu --needed pacman-contrib
+#
+#        sudo cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.orig
+#
+#        awk '/^## Worldwide$/{f=1; next}f==0{next}/^## /{exit}{print substr($0, 1);}' /etc/pacman.d/mirrorlist.orig \
+#            | sudo tee /etc/pacman.d/mirrorlist.backup
+#        awk '/^## Switzerland$/{f=1; next}f==0{next}/^## /{exit}{print substr($0, 1);}' /etc/pacman.d/mirrorlist.orig \
+#            | sudo tee -a /etc/pacman.d/mirrorlist.backup
+#        awk '/^## United States$/{f=1; next}f==0{next}/^## /{exit}{print substr($0, 1);}' /etc/pacman.d/mirrorlist.orig \
+#            | sudo tee -a /etc/pacman.d/mirrorlist.backup
+#
+#        sudo sed -i 's/^#//' /etc/pacman.d/mirrorlist.backup
+#
+#        rankmirrors -n 6 /etc/pacman.d/mirrorlist.backup |sudo tee /etc/pacman.d/mirrorlist
+#    fi
+#
+#    sudo pacman -Sy
+
+    #
+    # regular packages
+    #
+
+    # Removed from arch linux list. Removed most likely not needed, check
+    # these might be needed in the future
+    #    rxvt-unicode urxvt-perls \
+    #    xf86-video-intel \
+    #    adobe-source-han-sans-otc-fonts \
+    #    powertop \
+    #    tlp tlp-rdw \
+    #    fwupd \
+    #    fprintd \
+    #    cups \
+    #    wine \
+    #    bluez-utils \
+    sudo pacman -Su --needed \
+        neovim \
+        rxvt-unicode \
+        i3-wm \
+        i3status \
+        i3lock \
+        rofi \
+        tmux \
+        base-devel \
+        thunderbird \
+        borg \
+        mpv \
+        nextcloud-client \
+        redshift \
+        syncthing \
+        light \
+        strace \
+        docker \
+        docker-compose \
+        gocryptfs \
+        eog \
+        evince \
+        bind-tools \
+        xorg-xrandr \
+        xautolock \
+        xss-lock \
+        virtualbox \
+        maim \
+        dunst \
+        libreoffice-fresh \
+        gimp \
+        tigervnc \
+        gvfs \
+        yay \
+        kubectl \
+        xorg-fonts-100dpi \
+        xorg-fonts-75dpi \
+        xorg-fonts-misc \
+        xorg-fonts-type1 \
+        ttf-linux-libertine \
+        manjaro-printer
+
+
+    #
+    # FROM ARCH LINUX, cleaned up list
+    #
+    # Dependency installations
+    #   borg => python-llfuse
+    #   gnome-keyring => seahorse
+    #   linux-headers => linux + vbox
+    #   linux-lts-headers=> linux + virtualbox
+    #   tlp => acpi_call
+    #   tlp => tlp-rdw
+    #   blueman => libappindicator-gtk3
+    #   cpus/printer: foomatic-db* (driver search)
+    #
+    # Removed from arch linux list. Removed most likely not needed, check
+    # these might be needed in the future
+    #    python-llfuse \
+    #    seahorse \
+    #    linux-lts-headers \
+    #    xorg-xinput \
+    #    xf86-input-synaptics \
+    #    acpi_call \
+    #        foomatic-db \
+    #        foomatic-db-ppds \
+    #        foomatic-db-nonfree \
+    #        foomatic-db-nonfree-ppds \
+    #        foomatic-db-engine \
+    #        system-config-printer \
+    #    xorg-xhost \
+    sudo pacman -S --needed --asdeps \
+        linux-headers \
+        linux59-virtualbox-host-modules
+        virtualbox-guest-iso \
+
+    # load the new installed kernel modules:
+    sudo vboxreload
+
+    # AUR packages
+    # From Arch linux, maybe we need it, maybe not?
+    #    ttf-symbola \
+    # On install issues
+    #    yay -S --mflags='--nocheck'  fontconfig-ubuntu
+    yay -S \
+        google-chrome \
+        joplin-desktop \
+        discord_arch_electron \
+        virtualbox-ext-oracle \
+        slack-desktop \
+        zoom \
+        skypeforlinux-stable-bin \
+        masterpdfeditor-free \
+        telegram-desktop \
+        fontconfig-ubuntu
+
+    # Fix audio
+    echo "options snd-intel-dspcfg dsp_driver=1" \
+        | sudo tee /etc/modprobe.d/alsa.conf > /dev/null
+
+    # systemd
+    if [ ! -e ~/.config/systemd/user/battery-monitor.service ]; then
+        mkdir -p ~/.config/systemd/user
+        ln -s ~/repos/dotfiles/bin/battery-monitor.service \
+            ~/.config/systemd/user/battery-monitor.service
+        systemctl --user daemon-reload
+        systemctl --user enable battery-monitor.service
+        systemctl --user start battery-monitor.service
+    fi
+
+#    # TLP
+#    sudo systemctl enable tlp
+#    # required by tlp-rdw
+#    sudo systemctl enable NetworkManager-dispatcher
+#    sudo systemctl mask systemd-rfkill.service
+#    sudo systemctl mask systemd-rfkill.socket
+#    echo "START_CHARGE_THRESH_BAT0=75" \
+#        | sudo tee /etc/tlp.d/01-laptop-charge.conf > /dev/null
+#    echo "STOP_CHARGE_THRESH_BAT0=80"  \
+#        | sudo tee -a /etc/tlp.d/01-laptop-charge.conf > /dev/null
+
+#    #
+#    # Printer setup
+#    #
+#
+#    # avahi/systemd-resolved conflict, avahi used for cups printer search
+#    sudo mkdir -p /etc/systemd/resolved.conf.d
+#    sudo tee /etc/systemd/resolved.conf.d/cups-avahi-mdns.conf <<EOF > /dev/null
+#[Service]
+## resolve or no
+#MulticastDNS=resolve
+#EOF
+#
+#    sudo systemctl enable avahi-daemon.service
+#    sudo systemctl start avahi-daemon.service
+#    # automatically start cups on socket request
+#    sudo systemctl enable org.cups.cupsd.socket
+#    sudo systemctl start org.cups.cupsd.socket
+
+    # link common applications
+    sudo ln -sf /usr/bin/google-chrome-stable /usr/bin/google-chrome
+    sudo ln -sf /usr/bin/nvim /usr/bin/vim
+
+#    # Add user to group
+#    sudo usermod -a -G docker volker
+#    sudo usermod -a -G input volker
+#    sudo usermod -a -G cups volker
+#    #newgrp cups
+#    #newgrp input
+#    #newgrp docker
+#
+#    if ! grep "^user_allow_other" /etc/fuse.conf > /dev/null; then
+#        echo "user_allow_other" | sudo tee -a  /etc/fuse.conf
+#    fi
+
+#    # Install AUR packages that aren't available
+#    yay -S --needed \
+#        pcloud-drive \
+#        fontconfig-ubuntu \
+#        activitywatch-bin \
+#        masterpdfeditor-free
+#
     umask 077
 }
 
@@ -728,6 +978,7 @@ x1c7Config() {
 usage() {
     echo "$0 <argument>:"
     echo "   $0 arch"
+    echo "   $0 manjaro"
     echo "   $0 mainserver"
     echo "   $0 macos"
     echo "   $0 xubuntu"
@@ -762,6 +1013,11 @@ main() {
             installDotfiles
             moveDotfiles
             arch
+            ;;
+        manjaro)
+            installDotfiles
+            moveDotfiles
+            manjaro
             ;;
         "macos")
             installDotfiles
