@@ -215,16 +215,6 @@ gcalcli(){
         --name gcalcli \
         volkerfr/gcalcli "$@"
 }
-gimp(){
-    docker run -t --rm -it \
-        -v /etc/localtime:/etc/localtime:ro \
-        -v /tmp/.X11-unix:/tmp/.X11-unix \
-        -e DISPLAY="unix$DISPLAY" \
-        -v "$HOME/sync/gimp:/root/hostos" \
-        -v "$HOME/sync/gimp:/root/Pictures" \
-        --name gimp \
-        jess/gimp
-}
 htop(){
     docker run --rm -it \
         --pid host \
@@ -356,8 +346,7 @@ rtorrent(){
         -e VPN_PASS="$PIA_PASSWORD" \
         -e VPN_PROV=pia \
         -e STRICT_PORT_FORWARD=yes \
-        -e ENABLE_PRIVOXY=yes \
-        -e ENABLE_FLOOD=yes \
+        -e ENABLE_PRIVOXY=no \
         -e ENABLE_AUTODL_IRSSI=no \
         -e WEBUI_PASS=rutorrent \
         -e RPC2_PASS=rutorrent \
