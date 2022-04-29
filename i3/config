@@ -13,7 +13,8 @@ set $exec_red_screen exec $HOME/repos/dotfiles/bin/red-screen.sh on;
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
-font pango:monospace 8
+#font pango:monospace 8
+font pango:monospace 10
 
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
@@ -30,19 +31,22 @@ exec --no-startup-id xautolock -time 10 -detectsleep -locker 'i3lock -c 000000 -
 exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock -c 000000 -f -n &
 exec --no-startup-id nextcloud &
 exec --no-startup-id nm-applet &
-exec --no-startup-id pcloud &
-exec --no-startup-id redshift-gtk -l 33.02:-96.69 &
-exec --no-startup-id $HOME/.joplin/Joplin.AppImage &
-exec --no-startup-id slack &
-exec --no-startup-id syncthing &
+#exec --no-startup-id pcloud &
+exec --no-startup-id dunst &
+# Texas
+exec --no-startup-id redshift-gtk -l 33.02:-96.69 -b 1:0.75 -t 6500:3000
+# switzerland
+#exec --no-startup-id redshift-gtk -l 47.59:8.25 &
+exec --no-startup-id bash $HOME/localdata/dotfiles/i3.local
+exec --no-startup-id syncthing -no-browser
 exec --no-startup-id blueman-applet &
 # Popup in case another workspace triggers an event
 exec --no-startup-id i3-msg -t subscribe -m '[ "workspace" ]' | jq --unbuffered -Mrc '. | select(.change == "urgent" and .current.urgent == true).current.name'|xargs -i -n1 notify-send 'Urgent: {}' &
 # Disable touchpad clicks for 1 sec
 # alternative try:  xinput set-prop "SYNA8004:00 06CB:CD8B Touchpad" "Synaptics Palm Detection" 1
 exec --no-startup-id syndaemon -i 2 -t -d
+exec --no-startup-id compton --inactive-dim 0.2
 exec_always alttab -d 2 -s 1 -w 1
-
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -50,13 +54,15 @@ floating_modifier $mod
 # lock screen
 bindsym $default+l exec i3lock -c 000000 -f
 # applications
-bindsym $default+Return exec rxvt
+bindsym $default+Return exec urxvt
 
 # kill focused window
 bindsym $mod+Shift+q kill
 
 # start dmenu (a program launcher)
-bindsym $mod+d exec "rofi -combi-modi run,window,drun -show combi -sidebar-mode -terminal rxvt  -run-list-command $HOME/.i3/rofi_all_executeables -run-command '/bin/bash -i -c \\"{cmd}\\"'"
+bindsym $mod+d exec "rofi -combi-modi run,window,drun -show combi -sidebar-mode -terminal urxvt  -run-list-command $HOME/.i3/rofi_all_executeables -run-command '/bin/bash -i -c \\"{cmd}\\"'"
+
+bindsym Mod1+Shift+2 exec "maim -s | xclip -selection clipboard -t image/png"
 
 # There also is the (new) i3-dmenu-desktop which only displays applications
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
@@ -176,12 +182,13 @@ mode "resize" {
 bindsym $mod+r mode "resize";$exec_red_screen;
 
 # Launcher mode
-set $mode_launcher Launch: [c]hrome [t]hunar n[v]im [s]lack
+set $mode_launcher Launch: [c]hrome [t]hunderbird [T]hunar n[v]im [s]lack
 bindsym $mod+o mode "$mode_launcher";$exec_red_screen;
 mode "$mode_launcher" {
     bindsym c $color_reset exec google-chrome
     bindsym s $color_reset exec slack
-    bindsym t $color_reset exec thunar
+    bindsym t $color_reset exec thunderbird
+    bindsym T $color_reset exec thunar
     bindsym v $color_reset exec urxvt -e nvim
     bindsym Escape $color_reset mode "default"
     bindsym Return $color_reset mode "default"

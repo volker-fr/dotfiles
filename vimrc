@@ -133,19 +133,19 @@ let g:airline_powerline_fonts = 1   " use UFT-8 symbols; requires patched font
 "
 " vimwiki
 "
-let wiki_personal = { 'path':  '~/repos/vimwiki/personal/',
+let wiki_personal = { 'path':  '~/repos/vimwiki/',
                     \ 'diary_index': 'Home',
                     \ 'index': 'Home',
                     \ 'syntax': 'markdown',
                     \ 'ext': '.md',
-                    \ 'diary_link_fmt': '%Y-%m-01'}
+                    \ 'diary_link_fmt': '%Y-01-01'}
 " compile list
 let g:vimwiki_list = [wiki_personal]
 if has("autocmd")
   autocmd BufNewFile */diary/????-??-??.md call s:new_vimwiki_diary_template()
   " git pull and commit/push
-  autocmd BufRead *.md call system('cd '.expand("%:h").' && [ -f .autogit ] && git pull --no-edit')
-  autocmd BufWritePost *.md call system('cd '.expand("%:h").' && [ -f .autogit ] && git add "'.expand("%").'" && git commit -m "$(date) update" && git push')
+  autocmd BufRead *.md call system('cd '.expand("%:h").' && [ -f .autogitXX ] && git pull --no-edit')
+  autocmd BufWritePost *.md call system('cd '.expand("%:h").' && [ -f .autogitXX ] && git add "'.expand("%").'" && git commit -m "$(date) update" && git push')
 endif
 
 function s:new_vimwiki_diary_template()

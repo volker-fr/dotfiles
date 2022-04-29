@@ -701,6 +701,7 @@ EOF
     sudo usermod -a -G video volker
     sudo usermod -a -G input volker
     sudo usermod -a -G cups volker
+    sudo usermod -a -G vboxusers volker
     #newgrp cups
     #newgrp input
     #newgrp docker
@@ -717,6 +718,11 @@ EOF
         masterpdfeditor-free \
         activitywatch-bin \
         authy \
+
+
+    # VBOX
+    SUBSYSTEM=="usb_device", ACTION=="add", RUN+="/usr/share/virtualbox/VBoxCreateUSBNode.sh $major $minor vboxusers"
+SUBSYSTEM=="usb", ACTION=="add", ENV{DEVTYPE}=="usb_device", RUN+="/usr/share/virtualbox/VBoxCreateUSBNode.sh $major $minor vboxusers"
 
     umask 077
 }
@@ -779,6 +785,7 @@ manjaro() {
         redshift \
         syncthing \
         light \
+        lshw \
         strace \
         docker \
         docker-compose \
@@ -803,7 +810,8 @@ manjaro() {
         xorg-fonts-misc \
         xorg-fonts-type1 \
         ttf-linux-libertine \
-        manjaro-printer
+        manjaro-printer \
+        system-config-printer
 
 
     #
@@ -889,18 +897,34 @@ manjaro() {
 #    #
 #
 #    # avahi/systemd-resolved conflict, avahi used for cups printer search
+#    # this didn't fix it...
 #    sudo mkdir -p /etc/systemd/resolved.conf.d
 #    sudo tee /etc/systemd/resolved.conf.d/cups-avahi-mdns.conf <<EOF > /dev/null
 #[Service]
 ## resolve or no
 #MulticastDNS=resolve
 #EOF
-#
+
+#    # install nss-dns, see https://wiki.archlinux.org/index.php/Avahi#Hostname_resolution
+#    sudo pacman -S nss-mdns
+#    sudo systemctl restart avahi-daemon.service
+    # Some other random suggestion, but that could be related to "adding a printer"
+    # can't uninstall because its required by manjaro-printer, but somehow it wasn't
+    # automatically installed
+    sudo pacman -S cups-pdf
+
+    sudo systemctl disable systemd-resolved.service
+
+
 #    sudo systemctl enable avahi-daemon.service
 #    sudo systemctl start avahi-daemon.service
-#    # automatically start cups on socket request
-#    sudo systemctl enable org.cups.cupsd.socket
-#    sudo systemctl start org.cups.cupsd.socket
+    # automatically start cups on socket request
+    sudo systemctl enable --now cups.socket
+    sudo systemctl start cups.socket
+    # maybe in manjaro
+    #sudo systemctl enable --now cups.service
+    sudo systemctl enable --now cups.path
+    sudo usermod -a -G cups volker
 
     # link common applications
     sudo ln -sf /usr/bin/google-chrome-stable /usr/bin/google-chrome
