@@ -1,0 +1,35 @@
+brew "wget"
+brew "tmux"
+brew "coreutils"
+brew "findutils"
+brew "source-highlight"
+brew "watch"
+brew "imagemagick"
+brew "jq"
+brew "neovim"
+brew "mpv"
+
+# tmux tabcompletion etc will fail without it
+#brew install bash-completion
+
+# vim code checker
+brew "jsonlint"
+brew "shellcheck"
+brew "flake8"
+
+# tmux workaround for open etc
+# doesn't seem to be required anymore
+#brew install reattach-to-user-namespace
+
+# for vim-youcompleteme
+#brew install cmake go
+
+cask "iterm2"
+cask "firefox"
+cask "google-chrome"
+cask "amethyst"
+cask "vlc"
+
+# Only install to debug bigger macOS issues.
+# Not many features in the free version.
+#cask "etrecheckpro"

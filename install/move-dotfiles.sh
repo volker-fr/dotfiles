@@ -1,7 +1,11 @@
+#!/bin/sh
+set -e
+set -u
+set -o pipefail
+
 # Alert/Move the dotfiles instead they are where they shouldn't
-moveDotfiles() {
-    IFS=$'\n'
-    DIRS="
+IFS=$'\n'
+DIRS="
 $HOME/.thunderbird
 $HOME/.bashrc.local
 $HOME/.zshrc.local
@@ -25,29 +29,28 @@ $HOME/.local/share/TelegramDesktop
 $HOME/.local/share/keyrings
 $HOME/.local/share/fonts
 "
-    for DIR in $DIRS; do
-        DIR_NAME=$(basename "$DIR")
+for DIR in $DIRS; do
+    DIR_NAME=$(basename "$DIR")
 
-        # cut dot in beginning of filename
-        if echo "$DIR_NAME" | grep "^\." > /dev/null; then
-            DIR_NAME=$(echo "$DIR_NAME"|cut -c2-)
-        fi
-        DESTINATION="$HOME/localdata/dotfiles/$DIR_NAME"
+    # cut dot in beginning of filename
+    if echo "$DIR_NAME" | grep "^\." > /dev/null; then
+        DIR_NAME=$(echo "$DIR_NAME"|cut -c2-)
+    fi
+    DESTINATION="$HOME/localdata/dotfiles/$DIR_NAME"
 
-        # Move/link if it doesn't exists
-        if [ -e "$DIR" ] && [ ! -L "$DIR" ]; then
-            if [ -e "$DESTINATION" ]; then
-                echo "$DESTINATION already exists, please delete it before $DIR can be moved there"
-                exit 1
-            fi
-            mv "$DIR" "$DESTINATION"
-            ln -s "$DESTINATION" "$DIR"
+    # Move/link if it doesn't exists
+    if [ -e "$DIR" ] && [ ! -L "$DIR" ]; then
+        if [ -e "$DESTINATION" ]; then
+            echo "$DESTINATION already exists, please delete it before $DIR can be moved there"
+            exit 1
         fi
+        mv "$DIR" "$DESTINATION"
+        ln -s "$DESTINATION" "$DIR"
+    fi
 
-        # exists, but not linked
-        if [ -e "$DESTINATION" ] && [ ! -e "$DIR" ]; then
-            echo "$DESTINATION exists, but not $DIR. Linking."
-            ln -s "$DESTINATION" "$DIR"
-        fi
-    done
-}
+    # exists, but not linked
+    if [ -e "$DESTINATION" ] && [ ! -e "$DIR" ]; then
+        echo "$DESTINATION exists, but not $DIR. Linking."
+        ln -s "$DESTINATION" "$DIR"
+    fi
+done

@@ -1,3 +1,8 @@
+#!/bin/sh
+set -e
+set -u
+set -o pipefail
+
 macosLoginItems(){
     # to automatically add login items
     brew install OJFord/formulae/loginitems

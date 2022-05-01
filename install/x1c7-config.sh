@@ -1,3 +1,8 @@
+#!/bin/sh
+set -e
+set -u
+set -o pipefail
+
 x1c7Config() {
     # Uses /sys/class/backlight/%k/brightness
     if ! dpkg -l|grep -is '^ii  light ' > /dev/null; then
