@@ -10,6 +10,12 @@ cask "nordvpn"
 cask "tigervnc-viewer"
 # for ebook-convert etc
 cask "calibre"
+cask "telegram"
+
+# currently testing
+cask "macfuse"
+tap "gromgit/fuse"
+brew "gromgit/fuse/sshfs-mac"
 
 #cask "quitter"
 #cask "flux"

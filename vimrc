@@ -3,10 +3,10 @@
 "
 call plug#begin('~/.vim/plugged')
 Plug 'vimwiki/vimwiki'
-Plug 'altercation/vim-colors-solarized'
+"Plug 'altercation/vim-colors-solarized'
 Plug 'Yggdroot/indentLine'
 Plug 'nathanaelkane/vim-indent-guides', { 'for': 'json' } " due of json issues with indentLine
-Plug 'vim-syntastic/syntastic' " testing
+"Plug 'vim-syntastic/syntastic' " testing
 Plug 'airblade/vim-gitgutter' " show git changes on the left side of each line
 Plug 'tpope/vim-fugitive' " show git branch in status line & :Gblame
 Plug 'vim-airline/vim-airline'
@@ -92,7 +92,7 @@ map <c-j> :tabp<CR>
 "
 syntax enable
 set background=dark
-colorscheme solarized
+"colorscheme solarized
 "
 " background git-gutter sidebar
 highlight SignColumn ctermbg=0

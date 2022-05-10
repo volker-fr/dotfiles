@@ -3,6 +3,7 @@ for repo in \
     volker@c.uhrig.eu.org:/home/volker/git/vimwiki.git \
     volker@c.uhrig.eu.org:/home/volker/git/privat.git \
     volker@c.uhrig.eu.org:/home/volker/git/reddit-scripts.git \
+    volker@c.uhrig.eu.org:/home/volker/git/k8s-config.git \
 ; do
     cd $HOME/repos
     repo_name="$(echo $repo|sed 's,.*/,,'|sed 's/.git//')"

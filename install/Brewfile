@@ -8,6 +8,8 @@ brew "imagemagick"
 brew "jq"
 brew "neovim"
 brew "mpv"
+brew "kubernetes-cli"
+brew "k9s"
 
 # tmux tabcompletion etc will fail without it
 #brew install bash-completion
@@ -29,6 +31,7 @@ cask "firefox"
 cask "google-chrome"
 cask "amethyst"
 cask "vlc"
+cask "docker"
 
 # Only install to debug bigger macOS issues.
 # Not many features in the free version.
