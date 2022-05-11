@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 set -e
 set -u
 set -o pipefail
@@ -14,12 +14,13 @@ $HOME/.config/borg
 $HOME/.config/discord
 $HOME/.config/Nextcloud
 $HOME/.config/Authy Desktop
+$HOME/snap/authy/current/.config/Authy Desktop
 $HOME/.config/pcloud
-$HOME/.config/rclone
+$HOME/.config rclone
 $HOME/.config/syncthing
 $HOME/.config/Slack
+$HOME/snap/slack/current/.config/Slack
 $HOME/.config/google-chrome
-$HOME/.config/joplin-desktop
 $HOME/.config/skypeforlinux
 $HOME/.gitconfig
 $HOME/.mozilla/firefox
@@ -28,6 +29,7 @@ $HOME/.local/share/activitywatch
 $HOME/.local/share/TelegramDesktop
 $HOME/.local/share/keyrings
 $HOME/.local/share/fonts
+$HOME/.zotero
 "
 for DIR in $DIRS; do
     DIR_NAME=$(basename "$DIR")

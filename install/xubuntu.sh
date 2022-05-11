@@ -1,52 +1,54 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 set -u
 set -o pipefail
 
+#          acpi
+#          alttab
+#          arandr
+#          bash-completion
+#          compton
+#          encfs
+#          jsonlint
+#          powerstat
+#          unattended-upgrades
+#          rxvt-unicode-256color
 PACKAGES="
-          acpi
-          alttab
-          arandr
-          bash-completion
           borgbackup
           build-essential
-          compton
-          encfs
-          eog
+          curl
           evince
+          eog
           gparted
           i3
           iotop
-          jsonlint
           jq
           maim
-          mplayer
           mpv
           neovim
           openssh-server
-          powerstat
           python3-flake8
           redshift-gtk
           rofi
-          rxvt-unicode-256color
           shellcheck
+          sshfs
           source-highlight
           thunderbird
           tigervnc-viewer
           tmux
-          unattended-upgrades
           unrar
           virtualbox
           virtualbox-guest-additions-iso
           virtualbox-ext-pack
           xautolock
           xss-lock
+          zsh
           "
-
+INSTALL=""
 for i in $PACKAGES; do
     if ! dpkg -l|grep -is "ii  $i " > /dev/null; then
         INSTALL="$INSTALL $i"
-        echo "$i"
+        echo "Installing: $i"
     fi
 done
 # shellcheck disable=SC2086
@@ -54,8 +56,8 @@ done
 
 # docker
 if ! dpkg -l|grep -is 'docker-ce' > /dev/null; then
-    sudo apt-get remove docker docker-engine docker.io
-    sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+    sudo apt remove docker docker.io
+    sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
     sudo add-apt-repository --yes -u "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
     sudo apt install -y docker-ce
@@ -88,17 +90,19 @@ if ! dpkg -l|grep -is 'google-chrome' > /dev/null; then
 fi
 
 # Slack
-if ! dpkg -l|grep -is 'ii  slack-desktop' > /dev/null; then
-    curl -s -L -o /tmp/slack-desktop.deb https://downloads.slack-edge.com/linux_releases/slack-desktop-4.0.1-amd64.deb && \
-        sudo dpkg -i /tmp/slack-desktop.deb || \
-        sudo apt-get -f install -y && \
-        sudo apt-get update && sudo apt-get upgrade
+if ! snap list|grep -is '^slack' > /dev/null; then
+    sudo snap install slack
+fi
+
+# Authy
+if ! snap list|grep -is '^authy' > /dev/null; then
+    sudo snap install authy
 fi
 
 # pcloud
-if [ ! -f /usr/local/bin/pcloud ]; then
-    echo "Install pCloud: https://www.pcloud.com/download-free-online-cloud-file-storage.html"
-fi
+#if [ ! -f /usr/local/bin/pcloud ]; then
+    #echo "Install pCloud: https://www.pcloud.com/download-free-online-cloud-file-storage.html"
+#fi
 
 # gocryptfs
 if [ ! -f /usr/local/bin/gocryptfs ]; then
@@ -112,11 +116,11 @@ if [ ! -f /usr/local/bin/gocryptfs ]; then
 fi
 
 # disable bluetooth on boot
-if ! grep "AutoEnable=false" /etc/bluetooth/main.conf > /dev/null; then
-    sudo sed -i 's/^AutoEnable=.*/AutoEnable=false/' /etc/bluetooth/main.conf
-fi
+#if ! grep "AutoEnable=false" /etc/bluetooth/main.conf > /dev/null; then
+#    sudo sed -i 's/^AutoEnable=.*/AutoEnable=false/' /etc/bluetooth/main.conf
+#fi
 # disable bluetooth on i3 login/blueman-applet startup
-gsettings set org.blueman.plugins.powermanager auto-power-on false
+#gsettings set org.blueman.plugins.powermanager auto-power-on false
 
 # systemd
 if [ ! -e ~/.config/systemd/user/battery-monitor.service ]; then
@@ -128,16 +132,27 @@ if [ ! -e ~/.config/systemd/user/battery-monitor.service ]; then
     systemctl --user start battery-monitor.service
 fi
 
-# Upgrade all packages
-if ! grep "\\*:\\*" /etc/apt/apt.conf.d/50unattended-upgrades > /dev/null; then
-    sudo sed -i '/^Unattended-Upgrade::Allowed-Origins/a "*:*";' \
-        /etc/apt/apt.conf.d/50unattended-upgrades
+# obsidian
+VERSION=$(curl -s https://api.github.com/repos/obsidianmd/obsidian-releases/releases/latest \
+    | jq -r ".name")
+if ! dpkg -l|grep -is "obsidian"|grep "$VERSION" > /dev/null; then
+    URL=$(curl -s https://api.github.com/repos/obsidianmd/obsidian-releases/releases/latest \
+        | jq -r ".assets[] | select(.name) | .browser_download_url" \
+        | grep "_amd64.deb$")
+    curl -L -o /tmp/obsidian.deb "$URL"
+    sudo dpkg -i /tmp/obsidian.deb
 fi
 
+# Upgrade all packages
+#if ! grep "\\*:\\*" /etc/apt/apt.conf.d/50unattended-upgrades > /dev/null; then
+#    sudo sed -i '/^Unattended-Upgrade::Allowed-Origins/a "*:*";' \
+#        /etc/apt/apt.conf.d/50unattended-upgrades
+#fi
+
 # ignore more files for updatedb
-if ! grep "fuse.gocryptfs" /etc/updatedb.conf > /dev/null; then
-    sudo sed -i 's/\(PRUNEFS=.*\)"$/\1 fuse.gocryptfs"/' /etc/updatedb.conf
-fi
-if ! grep "/home\"" /etc/updatedb.conf > /dev/null; then
-    sudo sed -i 's,\(PRUNEPATHS=.*\)"$,\1 /home",' /etc/updatedb.conf
-fi
+#if ! grep "fuse.gocryptfs" /etc/updatedb.conf > /dev/null; then
+#    sudo sed -i 's/\(PRUNEFS=.*\)"$/\1 fuse.gocryptfs"/' /etc/updatedb.conf
+#fi
+#if ! grep "/home\"" /etc/updatedb.conf > /dev/null; then
+#    sudo sed -i 's,\(PRUNEPATHS=.*\)"$,\1 /home",' /etc/updatedb.conf
+#fi
