@@ -3,12 +3,14 @@
 # Make also functions and aliases executeable
 
 # make sure aliases are executed correctly
-#shopt -s expand_aliases
+shopt -s expand_aliases
 
 # bashrc doesn't work due of the non-interactive check
-for i in $HOME/.bash/*; do
-    source "$i"
-done
+if [ -d $HOME/.bash ]; then
+    for i in $HOME/.bash/*; do
+        source "$i"
+    done
+fi
 
 [ -f "$HOME/.bashrc.local" ] && source "$HOME/.bashrc.local"
 
