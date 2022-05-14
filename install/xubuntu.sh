@@ -21,6 +21,7 @@ PACKAGES="
           eog
           gparted
           i3
+          light
           iotop
           jq
           maim
@@ -29,6 +30,7 @@ PACKAGES="
           openssh-server
           python3-flake8
           redshift-gtk
+          subliminal  #_for_subtitle_download
           rofi
           shellcheck
           sshfs
@@ -46,6 +48,9 @@ PACKAGES="
           "
 INSTALL=""
 for i in $PACKAGES; do
+    if [[ $i == "#"* ]]; then
+        continue
+    fi
     if ! dpkg -l|grep -is "ii  $i " > /dev/null; then
         INSTALL="$INSTALL $i"
         echo "Installing: $i"
@@ -156,3 +161,28 @@ fi
 #if ! grep "/home\"" /etc/updatedb.conf > /dev/null; then
 #    sudo sed -i 's,\(PRUNEPATHS=.*\)"$,\1 /home",' /etc/updatedb.conf
 #fi
+
+# Fix backlight permissions
+if [ ! -e /etc/udev/rules.d/backlight.rules ]; then
+    echo 'ACTION=="add", SUBSYSTEM=="backlight", KERNEL=="<vendor>", RUN+="/bin/chgrp video /sys/class/backlight/%k/brightness"'|sudo tee -a /etc/udev/rules.d/backlight.rules
+    echo 'ACTION=="add", SUBSYSTEM=="backlight", KERNEL=="<vendor>", RUN+="/bin/chmod g+w /sys/class/backlight/%k/brightness"' | sudo tee -a /etc/udev/rules.d/backlight.rules
+    sudo usermod -a -G video volker
+fi
+
+if [ ! -e /usr/bin/kubectl ]; then
+    sudo apt-get install -y apt-transport-https ca-certificates curl
+    sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    #echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-$(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+    echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+    sudo apt-get update
+    sudo apt-get install -y kubelet kubeadm kubectl
+fi
+
+if [ ! -d /home/linuxbrew ]; then
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
+test -d /home/linuxbrew/.linuxbrew && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+if [ ! -f /home/linuxbrew/.linuxbrew/bin/k9s ]; then
+    brew install k9s
+fi
