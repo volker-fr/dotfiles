@@ -3,9 +3,7 @@ set -e
 set -u
 set -o pipefail
 
-#          acpi
 #          alttab
-#          arandr
 #          bash-completion
 #          compton
 #          encfs
@@ -14,8 +12,12 @@ set -o pipefail
 #          unattended-upgrades
 #          rxvt-unicode-256color
 PACKAGES="
+          acpi #_for_systemd_battery_monitoring_and_warning
+          arandr #_for_multiple_monitors
+          autorandr #_for_multiple_monitors
           borgbackup
           build-essential
+          calibre #_for_ebook-convert
           curl
           evince
           eog
@@ -42,6 +44,7 @@ PACKAGES="
           virtualbox
           virtualbox-guest-additions-iso
           virtualbox-ext-pack
+          whois
           xautolock
           xss-lock
           zsh
@@ -63,9 +66,11 @@ done
 if ! dpkg -l|grep -is 'docker-ce' > /dev/null; then
     sudo apt remove docker docker.io
     sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    sudo add-apt-repository --yes -u "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-    sudo apt install -y docker-ce
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+    echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
     sudo usermod -a -G docker volker
 fi
 
@@ -81,9 +86,9 @@ if ! dpkg -l|grep -is 'nextcloud-client' > /dev/null; then
 fi
 
 # syncthing
-if ! dpkg -l|grep -is 'syncthing' > /dev/null; then
-    curl -s https://syncthing.net/release-key.txt | sudo apt-key add -
-    echo "deb https://apt.syncthing.net/ syncthing stable" | sudo tee /etc/apt/sources.list.d/syncthing.list
+if ! dpkg -l|grep -is 'ii  syncthing' > /dev/null; then
+    sudo curl -s -o /usr/share/keyrings/syncthing-archive-keyring.gpg https://syncthing.net/release-key.gpg
+    echo "deb [signed-by=/usr/share/keyrings/syncthing-archive-keyring.gpg] https://apt.syncthing.net/ syncthing stable" | sudo tee /etc/apt/sources.list.d/syncthing.list
     sudo apt-get update
     sudo apt-get install syncthing
 fi
@@ -176,6 +181,24 @@ if [ ! -e /usr/bin/kubectl ]; then
     echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
     sudo apt-get update
     sudo apt-get install -y kubelet kubeadm kubectl
+fi
+
+if [ ! -e /usr/bin/signal-desktop ]; then
+    wget -O- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor > /tmp/signal-desktop-keyring.gpg
+    cat /tmp/signal-desktop-keyring.gpg | sudo tee -a /usr/share/keyrings/signal-desktop-keyring.gpg > /dev/null
+    #echo "deb [arch=amd64 signed-by=/usr/share/keyrings/signal-desktop-keyring.gpg] https://updates.signal.org/desktop/apt $(lsb_release -cs) main" |\
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/signal-desktop-keyring.gpg] https://updates.signal.org/desktop/apt xenial main" |\
+        sudo tee /etc/apt/sources.list.d/signal-xenial.list
+    sudo apt update && sudo apt install signal-desktop
+fi
+if [ ! -e /usr/bin/zotero -a ! -e /usr/local/bin/zotero ]; then
+    wget -qO- https://raw.githubusercontent.com/retorquere/zotero-deb/master/install.sh | sudo bash
+    sudo apt update
+    sudo apt install -y zotero
+fi
+
+if ! dpkg -l|grep -is 'nordvpn' > /dev/null; then
+    sh <(curl -sSf https://downloads.nordcdn.com/apps/linux/install.sh)
 fi
 
 if [ ! -d /home/linuxbrew ]; then

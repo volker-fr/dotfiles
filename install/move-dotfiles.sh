@@ -31,6 +31,7 @@ $HOME/.local/share/TelegramDesktop
 $HOME/.local/share/keyrings
 $HOME/.local/share/fonts
 $HOME/.zotero
+$HOME/Zotero
 "
 for DIR in $DIRS; do
     DIR_NAME=$(basename "$DIR")
