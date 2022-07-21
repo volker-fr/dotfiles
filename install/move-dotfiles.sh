@@ -13,6 +13,7 @@ $HOME/.kube
 $HOME/.config/borg
 $HOME/.config/discord
 $HOME/.config/mpv
+$HOME/.config/rclone
 $HOME/.config/Nextcloud
 $HOME/.config/Authy Desktop
 $HOME/snap/authy/current/.config/Authy Desktop

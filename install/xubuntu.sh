@@ -33,10 +33,12 @@ PACKAGES="
           python3-flake8
           redshift-gtk
           subliminal  #_for_subtitle_download
+          openvpn
           rofi
           shellcheck
           sshfs
           source-highlight
+          system-config-printer
           thunderbird
           tigervnc-viewer
           tmux
@@ -45,6 +47,7 @@ PACKAGES="
           virtualbox-guest-additions-iso
           virtualbox-ext-pack
           whois
+          wireguard-tools
           xautolock
           xss-lock
           zsh
@@ -199,6 +202,10 @@ fi
 
 if ! dpkg -l|grep -is 'nordvpn' > /dev/null; then
     sh <(curl -sSf https://downloads.nordcdn.com/apps/linux/install.sh)
+    # some bug
+    if [ -e /usr/bin/resolvectl -a ! -e /usr/bin/systemd-resolve ];then
+        sudo ln -s /usr/bin/resolvectl /usr/bin/systemd-resolve
+    fi
 fi
 
 if [ ! -d /home/linuxbrew ]; then
@@ -208,4 +215,8 @@ fi
 test -d /home/linuxbrew/.linuxbrew && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 if [ ! -f /home/linuxbrew/.linuxbrew/bin/k9s ]; then
     brew install k9s
+fi
+
+if [ ! -f /home/linuxbrew/.linuxbrew/bin/yt-dlp ]; then
+    brew install yt-dlp
 fi
