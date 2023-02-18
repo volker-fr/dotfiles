@@ -7,6 +7,7 @@ Plug 'vimwiki/vimwiki'
 Plug 'Yggdroot/indentLine'
 Plug 'nathanaelkane/vim-indent-guides', { 'for': 'json' } " due of json issues with indentLine
 "Plug 'vim-syntastic/syntastic' " testing
+Plug 'dense-analysis/ale' " linting tool like syntastic
 Plug 'airblade/vim-gitgutter' " show git changes on the left side of each line
 Plug 'tpope/vim-fugitive' " show git branch in status line & :Gblame
 Plug 'vim-airline/vim-airline'
@@ -16,6 +17,7 @@ Plug 'vim-scripts/nginx.vim' " vim syntax hilighting
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'pearofducks/ansible-vim'
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+Plug 'davidhalter/jedi-vim'
 call plug#end()
 
 "
@@ -47,7 +49,12 @@ if &diff == 'nodiff'    " don't run it when using vim diff, else vim crashes
 endif
 " To download missing languages: set spelllang=de
 set spelllang=en,de
-set spell
+
+" Spelling -- disable by default, lead to too much red blocks in code
+"set spell
+hi clear SpellBad
+hi SpellBad cterm=underline
+
 
 "
 " Status line
