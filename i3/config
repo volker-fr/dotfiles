@@ -203,5 +203,9 @@ bar {
 # Floating windows
 for_window [class="MPlayer"] floating enable
 for_window [class="mpv"] floating enable
+for_window [class="Plex"] floating enable
 
 for_window [class="Slack" floating] move container to workspace current
+
+# External monitor always gets workspace 9
+workspace 9 output DP-2
